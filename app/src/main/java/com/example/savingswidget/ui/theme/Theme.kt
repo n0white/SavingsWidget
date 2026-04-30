@@ -1,4 +1,4 @@
-package com.example.savingswidget.ui.theme
+package com.n0white.savingswidget.ui.theme
 
 import android.app.Activity
 import android.os.Build

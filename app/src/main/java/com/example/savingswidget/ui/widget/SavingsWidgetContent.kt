@@ -1,4 +1,4 @@
-package com.example.savingswidget.ui.widget
+package com.n0white.savingswidget.ui.widget
 
 import android.content.Intent
 import androidx.compose.runtime.Composable
@@ -25,8 +25,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.action.actionStartActivity
-import com.example.savingswidget.MainActivity
-import com.example.savingswidget.data.model.Goal
+import com.n0white.savingswidget.MainActivity
+import com.n0white.savingswidget.data.model.Goal
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -34,14 +34,14 @@ import kotlin.math.roundToInt
 @Composable
 fun SavingsWidgetContent(goal: Goal) {
     val size = LocalSize.current
-    val isSmall = size.width < 200.dp 
+    val isSmall = size.width < 200.dp
 
     GlanceTheme {
         val colors = GlanceTheme.colors
-        
+
         /**
          * Refined Inverted Style with Balanced Hierarchy:
-         * 
+         *
          * 1. Background: 'onSecondary' (Pure neutral base)
          * 2. Main Accents: 'primary' (Color for progress, saved amount)
          * 3. Main Content: 'onSurface' (Clear contrast for Goal Name)
@@ -54,7 +54,7 @@ fun SavingsWidgetContent(goal: Goal) {
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .padding(16.dp)
-                .clickable(actionStartActivity(Intent().setClassName("com.example.savingswidget", "com.example.savingswidget.MainActivity")))
+                .clickable(actionStartActivity(Intent().setClassName("com.n0white.savingswidget", "com.n0white.savingswidget.MainActivity")))
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize()
@@ -87,12 +87,12 @@ fun SavingsWidgetContent(goal: Goal) {
                         Box(
                             modifier = GlanceModifier
                                 .size(48.dp)
-                                .background(colors.secondaryContainer) 
+                                .background(colors.secondaryContainer)
                                 .cornerRadius(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = goal.emoji, 
+                                text = goal.emoji,
                                 style = TextStyle(
                                     fontSize = 22.sp,
                                     color = colors.onSecondaryContainer
@@ -178,7 +178,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         )
                     )
                     Spacer(modifier = GlanceModifier.defaultWeight())
-                    
+
                     val footerText = if (isSmall) "left: " else "remaining: "
                     Text(
                         text = "$footerText${goal.currency}${goal.remaining.formatAmount()}",

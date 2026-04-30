@@ -1,4 +1,4 @@
-package com.example.savingswidget.ui.widget
+package com.n0white.savingswidget.ui.widget
 
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 

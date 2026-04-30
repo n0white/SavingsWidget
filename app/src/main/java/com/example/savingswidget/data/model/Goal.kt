@@ -1,4 +1,4 @@
-package com.example.savingswidget.data.model
+package com.n0white.savingswidget.data.model
 
 data class Goal(
     val id: Long = 0,

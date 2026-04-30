@@ -1,4 +1,4 @@
-package com.example.savingswidget
+package com.n0white.savingswidget
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.updateAll
-import com.example.savingswidget.data.GoalRepository
-import com.example.savingswidget.data.model.Goal
-import com.example.savingswidget.ui.theme.SavingsWidgetTheme
-import com.example.savingswidget.ui.widget.SavingsWidget
+import com.n0white.savingswidget.data.GoalRepository
+import com.n0white.savingswidget.data.model.Goal
+import com.n0white.savingswidget.ui.theme.SavingsWidgetTheme
+import com.n0white.savingswidget.ui.widget.SavingsWidget
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
