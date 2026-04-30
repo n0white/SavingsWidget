@@ -66,7 +66,6 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         var targetAmount by remember(goal) { mutableStateOf(goal?.targetAmount?.toString() ?: "") }
         var savedAmount by remember(goal) { mutableStateOf(goal?.savedAmount?.toString() ?: "") }
         var currency by remember(goal) { mutableStateOf(goal?.currency ?: "$") }
-        var isWavy by remember(goal) { mutableStateOf(goal?.isWavy ?: true) }
 
         Column(
             modifier = modifier
@@ -112,25 +111,6 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Wavy Progress Style", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Enable wavy effect for the progress bar",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = isWavy,
-                    onCheckedChange = { isWavy = it }
-                )
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
@@ -140,8 +120,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                         emoji = emoji,
                         targetAmount = targetAmount.toDoubleOrNull() ?: 0.0,
                         savedAmount = savedAmount.toDoubleOrNull() ?: 0.0,
-                        currency = currency,
-                        isWavy = isWavy
+                        currency = currency
                     )
                     scope.launch {
                         repository.updateGoal(updatedGoal)

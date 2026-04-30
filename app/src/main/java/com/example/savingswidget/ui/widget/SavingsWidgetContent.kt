@@ -25,21 +25,11 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.action.actionStartActivity
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import androidx.compose.ui.graphics.toArgb
-import androidx.glance.Image
-import androidx.glance.ImageProvider
-import androidx.glance.LocalContext
 import com.example.savingswidget.MainActivity
 import com.example.savingswidget.data.model.Goal
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.math.PI
 import kotlin.math.roundToInt
-import kotlin.math.sin
 
 @Composable
 fun SavingsWidgetContent(goal: Goal) {
@@ -161,12 +151,14 @@ fun SavingsWidgetContent(goal: Goal) {
 
                     Spacer(modifier = GlanceModifier.height(12.dp))
 
-                    WavyProgressIndicator(
+                    LinearProgressIndicator(
                         progress = goal.progress,
-                        color = colors.primary.getColor(LocalContext.current),
-                        trackColor = colors.secondaryContainer.getColor(LocalContext.current),
-                        isWavy = goal.isWavy,
-                        modifier = GlanceModifier.fillMaxWidth().height(16.dp)
+                        modifier = GlanceModifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .cornerRadius(3.dp),
+                        color = colors.primary,
+                        backgroundColor = colors.secondaryContainer
                     )
                 }
 
@@ -203,108 +195,3 @@ fun SavingsWidgetContent(goal: Goal) {
 
 fun Double.formatAmount(): String =
     NumberFormat.getNumberInstance(Locale.US).format(this)
-
-@Composable
-fun WavyProgressIndicator(
-    progress: Float,
-    color: androidx.compose.ui.graphics.Color,
-    trackColor: androidx.compose.ui.graphics.Color,
-    isWavy: Boolean,
-    modifier: GlanceModifier = GlanceModifier
-) {
-    val context = LocalContext.current
-    val density = context.resources.displayMetrics.density
-    val size = LocalSize.current
-    
-    // We estimate the width based on LocalSize. If it's wrap_content it might be tricky,
-    // but in our widget it's usually fillMaxWidth or a fixed size.
-    val widthDp = if (size.width > 0.dp) size.width.value.toInt() - 32 else 200 // 32 for padding
-    val heightDp = 16
-    
-    // 97% for 2x2 widgets (usually > 150dp width/height), 98% for others
-    val isLargeWidget = size.width >= 150.dp && size.height >= 150.dp
-    val dotThreshold = if (isLargeWidget) 0.97f else 0.98f
-    
-    val bitmap = createWavyProgressBitmap(widthDp, heightDp, progress, color.toArgb(), trackColor.toArgb(), density, isWavy, dotThreshold)
-    
-    Image(
-        provider = ImageProvider(bitmap),
-        contentDescription = "Progress: ${(progress * 100).toInt()}%",
-        modifier = modifier
-    )
-}
-
-private fun createWavyProgressBitmap(
-    widthDp: Int,
-    heightDp: Int,
-    progress: Float,
-    color: Int,
-    trackColor: Int,
-    density: Float,
-    isWavy: Boolean,
-    dotThreshold: Float
-): Bitmap {
-    val width = (widthDp * density).toInt().coerceAtLeast(1)
-    val height = (heightDp * density).toInt().coerceAtLeast(1)
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val paint = Paint().apply {
-        this.color = color
-        style = Paint.Style.STROKE
-        strokeWidth = 6f * density // Increased thickness to 6dp
-        strokeCap = Paint.Cap.ROUND
-        isAntiAlias = true
-    }
-    
-    val centerY = height / 2f
-    val strokeWidth = 6f * density
-    val margin = strokeWidth / 2f // Add margin to prevent clipping of rounded caps
-    val effectiveWidth = width - (margin * 2)
-    val progressWidth = effectiveWidth * progress.coerceIn(0f, 1f)
-    
-    val gap = 8f * density // Adjusted gap to 8dp
-    
-    // 1. Draw Track
-    if (progress < 1f) {
-        paint.color = trackColor
-        val trackStart = margin + progressWidth + gap
-        if (trackStart < width - margin) {
-            canvas.drawLine(trackStart, centerY, width - margin, centerY, paint)
-        }
-    }
-    
-    // 2. Draw Stop Dot
-    if (progress < dotThreshold) {
-        paint.style = Paint.Style.FILL
-        paint.color = color
-        // Position dot closer to the end of the track
-        canvas.drawCircle(width - margin - 1f * density, centerY, 1.25f * density, paint)
-    }
-    
-    // 3. Draw Progress (Wavy or Straight)
-    if (progress > 0f) {
-        paint.style = Paint.Style.STROKE
-        paint.color = color
-        if (isWavy) {
-            val path = Path()
-            path.moveTo(margin, centerY)
-            val waveLength = 32f * density // Increased from 24dp for smoother wave
-            val waveHeight = 5f * density // Slightly reduced for smoother wave
-            
-            var x = 0f
-            val step = 0.5f // Even smaller step for maximum smoothness in Bitmap
-            while (x < progressWidth) {
-                val y = centerY + sin(x * 2 * PI / waveLength).toFloat() * (waveHeight / 2)
-                path.lineTo(margin + x, y)
-                x += step
-            }
-            path.lineTo(margin + progressWidth, centerY + sin(progressWidth * 2 * PI / waveLength).toFloat() * (waveHeight / 2))
-            
-            canvas.drawPath(path, paint)
-        } else {
-            canvas.drawLine(margin, centerY, margin + progressWidth, centerY, paint)
-        }
-    }
-    
-    return bitmap
-}
