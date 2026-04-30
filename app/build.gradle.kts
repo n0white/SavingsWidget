@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
 }
 
 android {
@@ -71,7 +70,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
@@ -81,14 +79,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
 
-    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.google.material)
-
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
