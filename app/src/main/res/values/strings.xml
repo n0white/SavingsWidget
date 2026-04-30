@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Savings Widget</string>
+    <string name="widget_description">Track your savings goals on your home screen.</string>
+</resources>

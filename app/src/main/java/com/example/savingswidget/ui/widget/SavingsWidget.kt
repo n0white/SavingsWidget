@@ -1,0 +1,35 @@
+package com.example.savingswidget.ui.widget
+
+import android.content.Context
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.glance.GlanceId
+import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.provideContent
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import androidx.glance.appwidget.SizeMode
+import com.example.savingswidget.data.GoalRepository
+import com.example.savingswidget.data.model.Goal
+
+class SavingsWidget : GlanceAppWidget() {
+
+    override val stateDefinition = PreferencesGlanceStateDefinition
+    override val sizeMode: SizeMode = SizeMode.Exact
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val repo = GoalRepository(context)
+
+        provideContent {
+            val goal by repo.goalFlow.collectAsState(
+                initial = Goal(
+                    name = "Loading...",
+                    emoji = "⏳",
+                    savedAmount = 0.0,
+                    targetAmount = 1.0,
+                    currency = "$"
+                )
+            )
+            SavingsWidgetContent(goal = goal)
+        }
+    }
+}
