@@ -1,6 +1,7 @@
 package com.example.savingswidget.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,6 +20,7 @@ class GoalRepository(val context: Context) {
         val KEY_SAVED = doublePreferencesKey("goal_saved")
         val KEY_TARGET = doublePreferencesKey("goal_target")
         val KEY_CURRENCY = stringPreferencesKey("goal_currency")
+        val KEY_IS_WAVY = booleanPreferencesKey("goal_is_wavy")
     }
 
     val goalFlow: Flow<Goal> = context.dataStore.data.map { prefs ->
@@ -27,7 +29,8 @@ class GoalRepository(val context: Context) {
             emoji = prefs[KEY_EMOJI] ?: "💰",
             savedAmount = prefs[KEY_SAVED] ?: 0.0,
             targetAmount = prefs[KEY_TARGET] ?: 1000.0,
-            currency = prefs[KEY_CURRENCY] ?: "$"
+            currency = prefs[KEY_CURRENCY] ?: "$",
+            isWavy = prefs[KEY_IS_WAVY] ?: true
         )
     }
 
@@ -38,6 +41,7 @@ class GoalRepository(val context: Context) {
             prefs[KEY_SAVED] = goal.savedAmount
             prefs[KEY_TARGET] = goal.targetAmount
             prefs[KEY_CURRENCY] = goal.currency
+            prefs[KEY_IS_WAVY] = goal.isWavy
         }
     }
 }
