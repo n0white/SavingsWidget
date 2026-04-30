@@ -1,39 +1,30 @@
 package com.example.savingswidget.ui.widget
 
 import android.content.Intent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.glance.LocalSize
-import androidx.glance.layout.Alignment
-import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
-import androidx.glance.appwidget.LinearProgressIndicator
-import androidx.glance.appwidget.cornerRadius
-import androidx.glance.background
-import androidx.glance.layout.Box
-import androidx.glance.layout.Column
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
-import androidx.glance.layout.padding
-import androidx.glance.layout.size
-import androidx.glance.text.FontWeight
-import androidx.glance.text.Text
-import androidx.glance.text.TextStyle
-import androidx.glance.action.clickable
-import androidx.glance.appwidget.action.actionStartActivity
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
+import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import com.example.savingswidget.MainActivity
+import androidx.glance.LocalSize
+import androidx.glance.action.clickable
+import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.appwidget.cornerRadius
+import androidx.glance.background
+import androidx.glance.layout.*
+import androidx.glance.text.FontWeight
+import androidx.glance.text.Text
+import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 import com.example.savingswidget.data.model.Goal
 import java.text.NumberFormat
 import java.util.Locale
@@ -45,19 +36,9 @@ import kotlin.math.sin
 fun SavingsWidgetContent(goal: Goal) {
     val size = LocalSize.current
     val isSmall = size.width < 200.dp 
+    val colors = GlanceTheme.colors
 
     GlanceTheme {
-        val colors = GlanceTheme.colors
-        
-        /**
-         * Refined Inverted Style with Balanced Hierarchy:
-         * 
-         * 1. Background: 'onSecondary' (Pure neutral base)
-         * 2. Main Accents: 'primary' (Color for progress, saved amount)
-         * 3. Main Content: 'onSurface' (Clear contrast for Goal Name)
-         * 4. Labels: 'onSurfaceVariant' (Neutral grey for technical labels)
-         * 5. Interaction: Click to open MainActivity
-         */
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -104,8 +85,7 @@ fun SavingsWidgetContent(goal: Goal) {
                             Text(
                                 text = goal.emoji, 
                                 style = TextStyle(
-                                    fontSize = 22.sp,
-                                    color = colors.onSecondaryContainer
+                                    fontSize = 22.sp
                                 )
                             )
                         }
@@ -161,10 +141,14 @@ fun SavingsWidgetContent(goal: Goal) {
 
                     Spacer(modifier = GlanceModifier.height(12.dp))
 
+                    // THE FIX: We use a mask-based approach. 
+                    // We draw the progress bar in WHITE on a transparent background, 
+                    // then use Glance's ColorFilter.tint() to apply the THEMED color.
+                    // This allows the system to change the color without re-generating the bitmap.
                     WavyProgressIndicator(
                         progress = goal.progress,
-                        color = colors.primary.getColor(LocalContext.current),
-                        trackColor = colors.secondaryContainer.getColor(LocalContext.current),
+                        colorProvider = colors.primary,
+                        trackColorProvider = colors.secondaryContainer,
                         isWavy = goal.isWavy,
                         modifier = GlanceModifier.fillMaxWidth().height(16.dp)
                     )
@@ -207,8 +191,8 @@ fun Double.formatAmount(): String =
 @Composable
 fun WavyProgressIndicator(
     progress: Float,
-    color: androidx.compose.ui.graphics.Color,
-    trackColor: androidx.compose.ui.graphics.Color,
+    colorProvider: ColorProvider,
+    trackColorProvider: ColorProvider,
     isWavy: Boolean,
     modifier: GlanceModifier = GlanceModifier
 ) {
@@ -216,93 +200,110 @@ fun WavyProgressIndicator(
     val density = context.resources.displayMetrics.density
     val size = LocalSize.current
     
-    // We estimate the width based on LocalSize. If it's wrap_content it might be tricky,
-    // but in our widget it's usually fillMaxWidth or a fixed size.
-    val widthDp = if (size.width > 0.dp) size.width.value.toInt() - 32 else 200 // 32 for padding
+    val widthDp = if (size.width > 0.dp) size.width.value.toInt() - 32 else 200
     val heightDp = 16
     
-    // 97% for 2x2 widgets (usually > 150dp width/height), 98% for others
     val isLargeWidget = size.width >= 150.dp && size.height >= 150.dp
     val dotThreshold = if (isLargeWidget) 0.97f else 0.98f
     
-    val bitmap = createWavyProgressBitmap(widthDp, heightDp, progress, color.toArgb(), trackColor.toArgb(), density, isWavy, dotThreshold)
+    // We create TWO layers. One for track, one for progress.
+    // Each is a "mask" (pure white) that gets tinted by Glance.
     
-    Image(
-        provider = ImageProvider(bitmap),
-        contentDescription = "Progress: ${(progress * 100).toInt()}%",
-        modifier = modifier
-    )
+    Box(modifier = modifier) {
+        // 1. Track Layer (Tinted with secondaryContainer)
+        val trackBitmap = createProgressMaskBitmap(widthDp, heightDp, progress, density, isWavy, dotThreshold, isTrack = true)
+        Image(
+            provider = ImageProvider(trackBitmap),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(trackColorProvider),
+            modifier = GlanceModifier.fillMaxSize()
+        )
+
+        // 2. Progress Layer (Tinted with primary)
+        val progressBitmap = createProgressMaskBitmap(widthDp, heightDp, progress, density, isWavy, dotThreshold, isTrack = false)
+        Image(
+            provider = ImageProvider(progressBitmap),
+            contentDescription = "Progress: ${(progress * 100).toInt()}%",
+            colorFilter = ColorFilter.tint(colorProvider),
+            modifier = GlanceModifier.fillMaxSize()
+        )
+    }
 }
 
-private fun createWavyProgressBitmap(
+/**
+ * Creates a "Mask" bitmap where the shapes are drawn in solid WHITE.
+ * Glance's ColorFilter.tint() will then replace this white with the theme-aware color.
+ */
+private fun createProgressMaskBitmap(
     widthDp: Int,
     heightDp: Int,
     progress: Float,
-    color: Int,
-    trackColor: Int,
     density: Float,
     isWavy: Boolean,
-    dotThreshold: Float
+    dotThreshold: Float,
+    isTrack: Boolean
 ): Bitmap {
     val width = (widthDp * density).toInt().coerceAtLeast(1)
     val height = (heightDp * density).toInt().coerceAtLeast(1)
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
+    
+    // We draw with PURE WHITE. Tinting will handle the theme colors.
+    val maskColor = android.graphics.Color.WHITE
+    
     val paint = Paint().apply {
-        this.color = color
+        color = maskColor
         style = Paint.Style.STROKE
-        strokeWidth = 6f * density // Increased thickness to 6dp
+        strokeWidth = 6f * density
         strokeCap = Paint.Cap.ROUND
         isAntiAlias = true
     }
     
     val centerY = height / 2f
     val strokeWidth = 6f * density
-    val margin = strokeWidth / 2f // Add margin to prevent clipping of rounded caps
+    val margin = strokeWidth / 2f 
     val effectiveWidth = width - (margin * 2)
     val progressWidth = effectiveWidth * progress.coerceIn(0f, 1f)
+    val gap = 8f * density
     
-    val gap = 8f * density // Adjusted gap to 8dp
-    
-    // 1. Draw Track
-    if (progress < 1f) {
-        paint.color = trackColor
-        val trackStart = margin + progressWidth + gap
-        if (trackStart < width - margin) {
-            canvas.drawLine(trackStart, centerY, width - margin, centerY, paint)
-        }
-    }
-    
-    // 2. Draw Stop Dot
-    if (progress < dotThreshold) {
-        paint.style = Paint.Style.FILL
-        paint.color = color
-        // Position dot closer to the end of the track
-        canvas.drawCircle(width - margin - 1f * density, centerY, 1.25f * density, paint)
-    }
-    
-    // 3. Draw Progress (Wavy or Straight)
-    if (progress > 0f) {
-        paint.style = Paint.Style.STROKE
-        paint.color = color
-        if (isWavy) {
-            val path = Path()
-            path.moveTo(margin, centerY)
-            val waveLength = 32f * density // Increased from 24dp for smoother wave
-            val waveHeight = 5f * density // Slightly reduced for smoother wave
-            
-            var x = 0f
-            val step = 0.5f // Even smaller step for maximum smoothness in Bitmap
-            while (x < progressWidth) {
-                val y = centerY + sin(x * 2 * PI / waveLength).toFloat() * (waveHeight / 2)
-                path.lineTo(margin + x, y)
-                x += step
+    if (isTrack) {
+        // Draw Track part of the mask
+        if (progress < 1f) {
+            val trackStart = margin + progressWidth + gap
+            if (trackStart < width - margin) {
+                canvas.drawLine(trackStart, centerY, width - margin, centerY, paint)
             }
-            path.lineTo(margin + progressWidth, centerY + sin(progressWidth * 2 * PI / waveLength).toFloat() * (waveHeight / 2))
-            
-            canvas.drawPath(path, paint)
-        } else {
-            canvas.drawLine(margin, centerY, margin + progressWidth, centerY, paint)
+        }
+    } else {
+        // Draw Progress part of the mask
+        
+        // 1. Draw Stop Dot
+        if (progress < dotThreshold) {
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(width - margin - 1f * density, centerY, 1.25f * density, paint)
+        }
+        
+        // 2. Draw Progress Line/Wave
+        if (progress > 0f) {
+            paint.style = Paint.Style.STROKE
+            if (isWavy) {
+                val path = Path()
+                path.moveTo(margin, centerY)
+                val waveLength = 32f * density
+                val waveHeight = 5f * density
+                
+                var x = 0f
+                val step = 0.5f 
+                while (x < progressWidth) {
+                    val y = centerY + sin(x * 2 * PI / waveLength).toFloat() * (waveHeight / 2)
+                    path.lineTo(margin + x, y)
+                    x += step
+                }
+                path.lineTo(margin + progressWidth, centerY + sin(progressWidth * 2 * PI / waveLength).toFloat() * (waveHeight / 2))
+                canvas.drawPath(path, paint)
+            } else {
+                canvas.drawLine(margin, centerY, margin + progressWidth, centerY, paint)
+            }
         }
     }
     
