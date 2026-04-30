@@ -9,12 +9,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.appwidget.updateAll
 import com.example.savingswidget.data.GoalRepository
 import com.example.savingswidget.data.model.Goal
@@ -32,11 +36,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SavingsWidgetTheme {
+                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
                     topBar = {
-                        CenterAlignedTopAppBar(
-                            title = { Text("Goal Settings") }
+                        LargeTopAppBar(
+                            title = {
+                                Text(
+                                    "My Savings",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            scrollBehavior = scrollBehavior,
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                            )
                         )
                     }
                 ) { innerPadding ->
@@ -57,7 +75,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     if (goal == null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
@@ -70,48 +88,80 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(horizontal = 20.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Goal Name") },
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                "Configure your savings goal and see it on your home screen.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            OutlinedTextField(
-                value = emoji,
-                onValueChange = { emoji = it },
-                label = { Text("Emoji (optional)") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Goal Name") },
+                    placeholder = { Text("e.g. New Car") },
+                    leadingIcon = { Icon(Icons.Default.Savings, null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
 
-            OutlinedTextField(
-                value = currency,
-                onValueChange = { currency = it },
-                label = { Text("Currency Symbol") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = emoji,
+                        onValueChange = { emoji = it },
+                        label = { Text("Emoji") },
+                        placeholder = { Text("🚀") },
+                        leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.large
+                    )
 
-            OutlinedTextField(
-                value = targetAmount,
-                onValueChange = { targetAmount = it },
-                label = { Text("Target Amount") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                modifier = Modifier.fillMaxWidth()
-            )
+                    OutlinedTextField(
+                        value = currency,
+                        onValueChange = { currency = it },
+                        label = { Text("Currency") },
+                        placeholder = { Text("$") },
+                        leadingIcon = { Icon(Icons.Default.AttachMoney, null) },
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.large
+                    )
+                }
+            }
 
-            OutlinedTextField(
-                value = savedAmount,
-                onValueChange = { savedAmount = it },
-                label = { Text("Saved Amount") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = targetAmount,
+                    onValueChange = { targetAmount = it },
+                    label = { Text("Target Amount") },
+                    leadingIcon = { Icon(Icons.Default.TrackChanges, null) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = savedAmount,
+                    onValueChange = { savedAmount = it },
+                    label = { Text("Already Saved") },
+                    leadingIcon = { Icon(Icons.Default.AddCard, null) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+            }
 
             Button(
                 onClick = {
@@ -125,16 +175,25 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     scope.launch {
                         repository.updateGoal(updatedGoal)
                         SavingsWidget().updateAll(repository.context)
-                        snackbarHostState.showSnackbar("Goal updated!")
+                        snackbarHostState.showSnackbar("Settings saved successfully!")
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                contentPadding = PaddingValues(16.dp)
             ) {
                 Icon(Icons.Default.Check, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text("Save")
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    "Save Changes",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             SnackbarHost(hostState = snackbarHostState)
         }
