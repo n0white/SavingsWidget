@@ -10,7 +10,7 @@ datastore = "1.1.1"
 work = "2.10.0"
 room = "2.6.1"
 glance = "1.1.1"
-material = "1.12.0"
+googleMaterial = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,7 +34,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
 
-google-android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
