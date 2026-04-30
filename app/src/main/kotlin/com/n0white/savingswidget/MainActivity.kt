@@ -75,6 +75,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val saveSuccessMsg = stringResource(R.string.msg_save_success)
+    val defaultCurrency = stringResource(R.string.default_currency)
 
     if (goal == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -85,7 +86,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         var emoji by remember(goal) { mutableStateOf(goal?.emoji ?: "") }
         var targetAmount by remember(goal) { mutableStateOf(goal?.targetAmount?.toString() ?: "") }
         var savedAmount by remember(goal) { mutableStateOf(goal?.savedAmount?.toString() ?: "") }
-        var currency by remember(goal) { mutableStateOf(goal?.currency ?: stringResource(R.string.default_currency)) }
+        var currency by remember(goal) { mutableStateOf(goal?.currency ?: defaultCurrency) }
 
         Column(
             modifier = modifier
