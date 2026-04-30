@@ -18,8 +18,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -50,27 +48,23 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-        // Glance (Compose для віджетів)
-        implementation(libs.androidx.glance.appwidget)
-        implementation(libs.androidx.glance.material3)
 
-        // Material You динамічні кольори
-        implementation("com.google.android.material:material:1.12.0")
+    // Glance (Compose для віджетів)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
 
-        // DataStore для збереження цілей
-        implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // Material You динамічні кольори
+    implementation("com.google.android.material:material:1.12.0")
 
-        // WorkManager для оновлень
-        implementation("androidx.work:work-runtime-ktx:2.9.0")
+    // DataStore для збереження цілей
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-        // Room (опційно, якщо кілька цілей)
-        implementation("androidx.room:room-runtime:2.6.1")
-        ksp("androidx.room:room-compiler:2.6.1")
+    // WorkManager для оновлень
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // Room (опційно, якщо кілька цілей)
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 }
