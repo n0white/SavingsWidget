@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
                         LargeTopAppBar(
                             title = {
                                 Text(
-                                    "My Savings",
+                                    stringResource(R.string.title_my_savings),
                                     style = MaterialTheme.typography.headlineLarge,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -73,6 +74,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
     val goal by repository.goalFlow.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val saveSuccessMsg = stringResource(R.string.msg_save_success)
 
     if (goal == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -83,7 +85,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         var emoji by remember(goal) { mutableStateOf(goal?.emoji ?: "") }
         var targetAmount by remember(goal) { mutableStateOf(goal?.targetAmount?.toString() ?: "") }
         var savedAmount by remember(goal) { mutableStateOf(goal?.savedAmount?.toString() ?: "") }
-        var currency by remember(goal) { mutableStateOf(goal?.currency ?: "$") }
+        var currency by remember(goal) { mutableStateOf(goal?.currency ?: stringResource(R.string.default_currency)) }
 
         Column(
             modifier = modifier
@@ -93,7 +95,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Text(
-                "Configure your savings goal and see it on your home screen.",
+                stringResource(R.string.edit_screen_description),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -105,8 +107,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Goal Name") },
-                    placeholder = { Text("e.g. New Car") },
+                    label = { Text(stringResource(R.string.label_goal_name)) },
+                    placeholder = { Text(stringResource(R.string.placeholder_goal_name)) },
                     leadingIcon = { Icon(Icons.Default.Savings, null) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large
@@ -119,8 +121,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     OutlinedTextField(
                         value = emoji,
                         onValueChange = { emoji = it },
-                        label = { Text("Emoji") },
-                        placeholder = { Text("🚀") },
+                        label = { Text(stringResource(R.string.label_emoji)) },
+                        placeholder = { Text(stringResource(R.string.placeholder_emoji)) },
                         leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.large
@@ -129,8 +131,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     OutlinedTextField(
                         value = currency,
                         onValueChange = { currency = it },
-                        label = { Text("Currency") },
-                        placeholder = { Text("$") },
+                        label = { Text(stringResource(R.string.label_currency)) },
+                        placeholder = { Text(stringResource(R.string.placeholder_currency)) },
                         leadingIcon = { Icon(Icons.Default.AttachMoney, null) },
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.large
@@ -145,7 +147,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 OutlinedTextField(
                     value = targetAmount,
                     onValueChange = { targetAmount = it },
-                    label = { Text("Target Amount") },
+                    label = { Text(stringResource(R.string.label_target_amount)) },
                     leadingIcon = { Icon(Icons.Default.TrackChanges, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
@@ -155,7 +157,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 OutlinedTextField(
                     value = savedAmount,
                     onValueChange = { savedAmount = it },
-                    label = { Text("Already Saved") },
+                    label = { Text(stringResource(R.string.label_saved_amount)) },
                     leadingIcon = { Icon(Icons.Default.AddCard, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
@@ -175,7 +177,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     scope.launch {
                         repository.updateGoal(updatedGoal)
                         SavingsWidget().updateAll(repository.context)
-                        snackbarHostState.showSnackbar("Settings saved successfully!")
+                        snackbarHostState.showSnackbar(saveSuccessMsg)
                     }
                 },
                 modifier = Modifier
@@ -187,7 +189,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 Icon(Icons.Default.Check, contentDescription = null)
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    "Save Changes",
+                    stringResource(R.string.btn_save_changes),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

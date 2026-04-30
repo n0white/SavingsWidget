@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.n0white.savingswidget.R
 import com.n0white.savingswidget.data.model.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,11 +24,11 @@ class GoalRepository(val context: Context) {
 
     val goalFlow: Flow<Goal> = context.dataStore.data.map { prefs ->
         Goal(
-            name = prefs[KEY_NAME] ?: "Savings Goal",
-            emoji = prefs[KEY_EMOJI] ?: "💰",
+            name = prefs[KEY_NAME] ?: context.getString(R.string.default_goal_name),
+            emoji = prefs[KEY_EMOJI] ?: context.getString(R.string.default_emoji),
             savedAmount = prefs[KEY_SAVED] ?: 0.0,
             targetAmount = prefs[KEY_TARGET] ?: 1000.0,
-            currency = prefs[KEY_CURRENCY] ?: "$"
+            currency = prefs[KEY_CURRENCY] ?: context.getString(R.string.default_currency)
         )
     }
 

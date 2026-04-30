@@ -1,4 +1,26 @@
 <resources>
     <string name="app_name">Savings Widget</string>
     <string name="widget_description">Track your savings goals on your home screen.</string>
+    <string name="title_my_savings">My Savings</string>
+    <string name="edit_screen_description">Configure your savings goal and see it on your home screen.</string>
+    <string name="label_goal_name">Goal Name</string>
+    <string name="placeholder_goal_name">e.g. New Car</string>
+    <string name="label_emoji">Emoji</string>
+    <string name="placeholder_emoji">🚀</string>
+    <string name="label_currency">Currency</string>
+    <string name="placeholder_currency">$</string>
+    <string name="label_target_amount">Target Amount</string>
+    <string name="label_saved_amount">Already Saved</string>
+    <string name="btn_save_changes">Save Changes</string>
+    <string name="msg_save_success">Settings saved successfully!</string>
+    <string name="widget_header_title">Savings</string>
+    <string name="label_target">target</string>
+    <string name="label_left">left: </string>
+    <string name="label_remaining">remaining: </string>
+    <string name="label_of">of </string>
+    <string name="default_goal_name">Savings Goal</string>
+    <string name="state_loading">Loading...</string>
+    <string name="emoji_loading">⏳</string>
+    <string name="default_emoji">💰</string>
+    <string name="default_currency">$</string>
 </resources>
