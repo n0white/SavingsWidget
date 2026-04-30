@@ -51,7 +51,7 @@ fun SavingsWidgetContent(goal: Goal) {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(colors.onSecondary) 
+                .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .padding(16.dp)
                 .clickable(actionStartActivity(Intent().setClassName("com.example.savingswidget", "com.example.savingswidget.MainActivity")))
