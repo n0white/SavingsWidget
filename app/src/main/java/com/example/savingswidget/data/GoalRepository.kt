@@ -1,11 +1,11 @@
-package com.example.savingswidget.data
+package com.n0white.savingswidget.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.savingswidget.data.model.Goal
+import com.n0white.savingswidget.data.model.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
