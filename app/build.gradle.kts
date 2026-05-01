@@ -5,15 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.savingswidget"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    namespace = "com.n0white.savingswidget"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.savingswidget"
+        applicationId = "com.n0white.savingswidget"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
