@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Use Material3 as base for better animation support -->
+    <!-- Dark theme uses the same modern base -->
     <style name="Theme.SavingsWidget" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">

@@ -1,12 +1,10 @@
 package com.example.savingswidget.ui.widget
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.ColorFilter
@@ -25,6 +23,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.example.savingswidget.MainActivity
 import com.example.savingswidget.data.model.Goal
 import java.text.NumberFormat
 import java.util.Locale
@@ -45,7 +44,7 @@ fun SavingsWidgetContent(goal: Goal) {
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .padding(16.dp)
-                .clickable(actionStartActivity(Intent().setClassName("com.example.savingswidget", "com.example.savingswidget.MainActivity")))
+                .clickable(actionStartActivity(android.content.Intent(androidx.glance.LocalContext.current, MainActivity::class.java)))
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize()
@@ -141,10 +140,6 @@ fun SavingsWidgetContent(goal: Goal) {
 
                     Spacer(modifier = GlanceModifier.height(12.dp))
 
-                    // THE FIX: We use a mask-based approach. 
-                    // We draw the progress bar in WHITE on a transparent background, 
-                    // then use Glance's ColorFilter.tint() to apply the THEMED color.
-                    // This allows the system to change the color without re-generating the bitmap.
                     WavyProgressIndicator(
                         progress = goal.progress,
                         colorProvider = colors.primary,
@@ -206,11 +201,7 @@ fun WavyProgressIndicator(
     val isLargeWidget = size.width >= 150.dp && size.height >= 150.dp
     val dotThreshold = if (isLargeWidget) 0.97f else 0.98f
     
-    // We create TWO layers. One for track, one for progress.
-    // Each is a "mask" (pure white) that gets tinted by Glance.
-    
     Box(modifier = modifier) {
-        // 1. Track Layer (Tinted with secondaryContainer)
         val trackBitmap = createProgressMaskBitmap(widthDp, heightDp, progress, density, isWavy, dotThreshold, isTrack = true)
         Image(
             provider = ImageProvider(trackBitmap),
@@ -219,7 +210,6 @@ fun WavyProgressIndicator(
             modifier = GlanceModifier.fillMaxSize()
         )
 
-        // 2. Progress Layer (Tinted with primary)
         val progressBitmap = createProgressMaskBitmap(widthDp, heightDp, progress, density, isWavy, dotThreshold, isTrack = false)
         Image(
             provider = ImageProvider(progressBitmap),
@@ -230,10 +220,6 @@ fun WavyProgressIndicator(
     }
 }
 
-/**
- * Creates a "Mask" bitmap where the shapes are drawn in solid WHITE.
- * Glance's ColorFilter.tint() will then replace this white with the theme-aware color.
- */
 private fun createProgressMaskBitmap(
     widthDp: Int,
     heightDp: Int,
@@ -248,7 +234,6 @@ private fun createProgressMaskBitmap(
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     
-    // We draw with PURE WHITE. Tinting will handle the theme colors.
     val maskColor = android.graphics.Color.WHITE
     
     val paint = Paint().apply {
@@ -267,7 +252,6 @@ private fun createProgressMaskBitmap(
     val gap = 8f * density
     
     if (isTrack) {
-        // Draw Track part of the mask
         if (progress < 1f) {
             val trackStart = margin + progressWidth + gap
             if (trackStart < width - margin) {
@@ -275,15 +259,11 @@ private fun createProgressMaskBitmap(
             }
         }
     } else {
-        // Draw Progress part of the mask
-        
-        // 1. Draw Stop Dot
         if (progress < dotThreshold) {
             paint.style = Paint.Style.FILL
             canvas.drawCircle(width - margin - 1f * density, centerY, 1.25f * density, paint)
         }
         
-        // 2. Draw Progress Line/Wave
         if (progress > 0f) {
             paint.style = Paint.Style.STROKE
             if (isWavy) {

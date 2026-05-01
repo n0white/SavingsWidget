@@ -64,6 +64,9 @@ dependencies {
         // Material You динамічні кольори
         implementation("com.google.android.material:material:1.12.0")
 
+        // Splash Screen API
+        implementation("androidx.core:core-splashscreen:1.0.1")
+
         // DataStore для збереження цілей
         implementation("androidx.datastore:datastore-preferences:1.1.1")
 
