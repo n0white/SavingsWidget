@@ -9,4 +9,4 @@
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:description="@string/widget_description"
-    android:previewImage="@drawable/ic_launcher_background" />
+    android:previewImage="@drawable/widget_preview" />
