@@ -23,6 +23,7 @@ class GoalRepository(val context: Context) {
         val KEY_MONTH_START_AMOUNT = doublePreferencesKey("month_start_amount")
         val KEY_LAST_UPDATE_MONTH = intPreferencesKey("last_update_month")
         val KEY_BG_IMAGE = stringPreferencesKey("bg_image_path")
+        val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("is_blur_enabled")
         val KEY_COLOR_PRIMARY = intPreferencesKey("color_primary")
         val KEY_COLOR_ON_SURFACE = intPreferencesKey("color_on_surface")
         val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("color_secondary_container")
@@ -50,6 +51,7 @@ class GoalRepository(val context: Context) {
             startOfMonthAmount = effectiveStartAmount,
             lastUpdateMonth = if (currentMonth != storedMonth && storedMonth != -1) currentMonth else storedMonth,
             backgroundImagePath = prefs[KEY_BG_IMAGE],
+            isBlurEnabled = prefs[KEY_IS_BLUR_ENABLED] ?: false,
             customPrimary = prefs[KEY_COLOR_PRIMARY],
             customOnSurface = prefs[KEY_COLOR_ON_SURFACE],
             customSecondaryContainer = prefs[KEY_COLOR_SECONDARY_CONTAINER]
@@ -76,6 +78,7 @@ class GoalRepository(val context: Context) {
             prefs[KEY_CURRENCY] = goal.currency
             prefs[KEY_IS_WAVY] = goal.isWavy
             prefs[KEY_BG_IMAGE] = goal.backgroundImagePath ?: ""
+            prefs[KEY_IS_BLUR_ENABLED] = goal.isBlurEnabled
             
             goal.customPrimary?.let { prefs[KEY_COLOR_PRIMARY] = it } ?: prefs.remove(KEY_COLOR_PRIMARY)
             goal.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)

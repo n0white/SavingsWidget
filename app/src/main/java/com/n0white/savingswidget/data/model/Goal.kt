@@ -13,6 +13,7 @@ data class Goal(
     val startOfMonthAmount: Double = 0.0,
     val lastUpdateMonth: Int = -1, // 0-11 for Calendar.MONTH
     val backgroundImagePath: String? = null,
+    val isBlurEnabled: Boolean = false,
     val customPrimary: Int? = null,
     val customOnSurface: Int? = null,
     val customSecondaryContainer: Int? = null

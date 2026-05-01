@@ -5,6 +5,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.renderscript.Allocation
+import android.renderscript.Element
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -88,8 +92,14 @@ fun SavingsWidgetContent(goal: Goal) {
             if (!goal.backgroundImagePath.isNullOrEmpty()) {
                 val file = File(goal.backgroundImagePath)
                 if (file.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                    if (bitmap != null) {
+                    val originalBitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    if (originalBitmap != null) {
+                        val bitmap = if (goal.isBlurEnabled) {
+                            blurBitmap(originalBitmap, context, 15f) // BLUR INTENSITY HERE (1f to 25f)
+                        } else {
+                            originalBitmap
+                        }
+                        
                         Image(
                             provider = ImageProvider(bitmap),
                             contentDescription = null,
@@ -444,4 +454,18 @@ private fun getDynamicFontSize(
     val maxWidthPx = maxWidth.value * density
 
     return if (measuredWidthPx > maxWidthPx) reducedSize else baseSize
+}
+
+private fun blurBitmap(bitmap: Bitmap, context: android.content.Context, radius: Float): Bitmap {
+    val outBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+    val rs = RenderScript.create(context)
+    val blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+    val allIn = Allocation.createFromBitmap(rs, bitmap)
+    val allOut = Allocation.createFromBitmap(rs, outBitmap)
+    blurScript.setRadius(radius)
+    blurScript.setInput(allIn)
+    blurScript.forEach(allOut)
+    allOut.copyTo(outBitmap)
+    rs.destroy()
+    return outBitmap
 }

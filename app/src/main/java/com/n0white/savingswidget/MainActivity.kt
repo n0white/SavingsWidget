@@ -141,6 +141,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         var savedAmount by remember(goal) { mutableStateOf(goal?.savedAmount?.toString() ?: "") }
         var currency by remember(goal) { mutableStateOf(goal?.currency ?: "$") }
         var isWavy by remember(goal) { mutableStateOf(goal?.isWavy ?: true) }
+        var isBlurEnabled by remember(goal) { mutableStateOf(goal?.isBlurEnabled ?: false) }
 
         val buttonColor by animateColorAsState(
             targetValue = if (isSaved) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
@@ -209,6 +210,61 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                                 fontWeight = FontWeight.Bold
                             )
                         }
+                    }
+                }
+            }
+
+            // Blur Toggle (Visible only when image is present)
+            if (!goal?.backgroundImagePath.isNullOrEmpty()) {
+                Surface(
+                    onClick = { isBlurEnabled = !isBlurEnabled },
+                    shape = MaterialTheme.shapes.large,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(if (isHighRes) 12.dp else 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(if (isHighRes) 36.dp else 30.dp)
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.shapes.medium),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.BlurOn,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
+                            Column {
+                                Text(
+                                    "Blur Background",
+                                    style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        Switch(
+                            checked = isBlurEnabled,
+                            onCheckedChange = { isBlurEnabled = it },
+                            thumbContent = if (isBlurEnabled) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
+                            } else null,
+                            modifier = Modifier.scale(if (isHighRes) 0.9f else 0.8f)
+                        )
                     }
                 }
             }
@@ -389,7 +445,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                             targetAmount = targetAmount.toDoubleOrNull() ?: 0.0,
                             savedAmount = savedAmount.toDoubleOrNull() ?: 0.0,
                             currency = currency,
-                            isWavy = isWavy
+                            isWavy = isWavy,
+                            isBlurEnabled = isBlurEnabled
                         )
                         scope.launch {
                             repository.updateGoal(updatedGoal)
