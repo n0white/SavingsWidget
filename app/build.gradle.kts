@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
 }
 
 android {
@@ -13,7 +12,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,11 +65,4 @@ dependencies {
 
         // DataStore для збереження цілей
         implementation("androidx.datastore:datastore-preferences:1.1.1")
-
-        // WorkManager для оновлень
-        implementation("androidx.work:work-runtime-ktx:2.9.0")
-
-        // Room (опційно, якщо кілька цілей)
-        implementation("androidx.room:room-runtime:2.6.1")
-        ksp("androidx.room:room-compiler:2.6.1")
 }

@@ -282,7 +282,17 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = emoji,
-                        onValueChange = { emoji = it },
+                        onValueChange = { input ->
+                            if (input.all { char ->
+                                    val type = Character.getType(char)
+                                    type == Character.SURROGATE.toInt() ||
+                                    type == Character.OTHER_SYMBOL.toInt() ||
+                                    type == Character.NON_SPACING_MARK.toInt() ||
+                                    char.isSurrogate()
+                                }) {
+                                emoji = input
+                            }
+                        },
                         label = { Text("Emoji") },
                         leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
                         modifier = Modifier.weight(1f),
@@ -293,7 +303,7 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
 
                     OutlinedTextField(
                         value = currency,
-                        onValueChange = { currency = it },
+                        onValueChange = { if (it.length <= 3) currency = it },
                         label = { Text("Currency") },
                         leadingIcon = { Icon(Icons.Default.AttachMoney, null) },
                         modifier = Modifier.weight(1f),
@@ -305,7 +315,14 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
 
                 OutlinedTextField(
                     value = targetAmount,
-                    onValueChange = { targetAmount = it },
+                    onValueChange = { input ->
+                        if (!input.contains("-")) {
+                            val parts = input.split(".")
+                            if (parts.size <= 2 && parts[0].length <= 9 && (parts.size < 2 || parts[1].length <= 2)) {
+                                targetAmount = input
+                            }
+                        }
+                    },
                     label = { Text("Target Amount") },
                     leadingIcon = { Icon(Icons.Default.TrackChanges, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -317,7 +334,14 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
 
                 OutlinedTextField(
                     value = savedAmount,
-                    onValueChange = { savedAmount = it },
+                    onValueChange = { input ->
+                        if (!input.contains("-")) {
+                            val parts = input.split(".")
+                            if (parts.size <= 2 && parts[0].length <= 9 && (parts.size < 2 || parts[1].length <= 2)) {
+                                savedAmount = input
+                            }
+                        }
+                    },
                     label = { Text("Saved Amount") },
                     leadingIcon = { Icon(Icons.Default.AddCard, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
