@@ -67,15 +67,29 @@ fun SavingsWidgetContent(goal: Goal) {
                                 color = colors.onSurfaceVariant
                             )
                         )
+                        val density = context.resources.displayMetrics.density
+                        val baseFontSize = if (isHighRes) 21.sp else 19.sp
+                        val reducedFontSize = if (isHighRes) 17.sp else 16.sp
+                        
+                        // We calculate available space: Total Width - Padding(32dp) - EmojiSpace(48dp) - Gap(12dp)
+                        val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
+                        
+                        val finalFontSize = if (!isSmall) {
+                            getDynamicFontSize(
+                                text = goal.name,
+                                maxWidth = availableWidthDp,
+                                baseSize = baseFontSize,
+                                reducedSize = reducedFontSize,
+                                density = density
+                            )
+                        } else {
+                            if (isHighRes) 20.sp else 18.sp
+                        }
+
                         Text(
                             text = goal.name,
                             style = TextStyle(
-                                fontSize = when {
-                                    isSmall && isHighRes -> 19.sp
-                                    isSmall -> 18.sp
-                                    isHighRes -> 24.sp
-                                    else -> 21.sp
-                                },
+                                fontSize = finalFontSize,
                                 fontWeight = FontWeight.Medium,
                                 color = colors.onSurface
                             ),
@@ -104,7 +118,9 @@ fun SavingsWidgetContent(goal: Goal) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
 
                 // 2. Middle section (Progress block)
-                Column(modifier = GlanceModifier.fillMaxWidth()) {
+                Column(modifier = GlanceModifier.fillMaxWidth()
+                    .padding(top = 6.dp)
+                ) {
                     if (isSmall) {
                         Text(
                             text = "${goal.currency}${goal.savedAmount.formatAmount()}",
@@ -130,7 +146,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         // Large Widget
                         if (goal.savedAmount > 0) {
                             MonthlyEfficiencyChip(efficiency = goal.monthlyEfficiency, isHighRes = isHighRes)
-                            Spacer(modifier = GlanceModifier.height(4.dp))
+                            Spacer(modifier = GlanceModifier.height(1.dp))
                         }
                         
                         Row(
@@ -160,8 +176,18 @@ fun SavingsWidgetContent(goal: Goal) {
                             }
                         }
                     }
+                    if (isSmall) {
+                        // Код для 2х2 (без додаткового спейсера тут)
+                        Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
+                    } else {
+                        // Код для великих
+                        // ... ваші Text ...
+                        Spacer(modifier = GlanceModifier.height(if (isHighRes) 0.dp else 3.dp))
+                    }
 
-                    Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
+
+
+
 
                     // Progress Bar
                     WavyProgressIndicator(
@@ -245,7 +271,7 @@ fun WavyProgressIndicator(
     
     // Width logic: We calculate the actual expected width in DP based on the widget size.
     // Standard horizontal padding for our widget is 16.dp * 2 = 32.dp.
-    val actualWidthDp = if (size.width.value > 0) (size.width.value.toInt() - 32).coerceAtLeast(100) else 160
+    val actualWidthDp = if (size.width.value > 0) (size.width.value.toInt() - 32).coerceAtLeast(50) else 160
     val heightDp = 18
     
     val isLargeWidget = size.width >= 150.dp && size.height >= 150.dp
@@ -346,4 +372,24 @@ private fun createProgressMaskBitmap(
     }
     
     return bitmap
+}
+
+/**
+ * Calculates whether the text fits in the given width.
+ * Returns [reducedSize] if it overflows, otherwise [baseSize].
+ */
+private fun getDynamicFontSize(
+    text: String,
+    maxWidth: androidx.compose.ui.unit.Dp,
+    baseSize: androidx.compose.ui.unit.TextUnit,
+    reducedSize: androidx.compose.ui.unit.TextUnit,
+    density: Float
+): androidx.compose.ui.unit.TextUnit {
+    val paint = Paint().apply {
+        textSize = baseSize.value * density
+    }
+    val measuredWidthPx = paint.measureText(text)
+    val maxWidthPx = maxWidth.value * density
+
+    return if (measuredWidthPx > maxWidthPx) reducedSize else baseSize
 }
