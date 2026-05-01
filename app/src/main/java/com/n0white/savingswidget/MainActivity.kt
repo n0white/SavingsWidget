@@ -1,12 +1,19 @@
 package com.n0white.savingswidget
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,10 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.glance.appwidget.updateAll
+import androidx.palette.graphics.Palette
 import com.n0white.savingswidget.data.GoalRepository
 import com.n0white.savingswidget.data.model.Goal
 import com.n0white.savingswidget.ui.components.WavyProgressIndicator
@@ -29,6 +40,8 @@ import com.n0white.savingswidget.ui.theme.SavingsWidgetTheme
 import com.n0white.savingswidget.ui.widget.SavingsWidget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -72,7 +85,50 @@ class MainActivity : ComponentActivity() {
 fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
     val goal by repository.goalFlow.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var isSaved by remember { mutableStateOf(false) }
+    
+    val sw = context.resources.configuration.smallestScreenWidthDp
+    val isHighRes = sw >= 410
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            scope.launch {
+                val result = processImage(context, it)
+                result?.let { (path, palette) ->
+                    val currentGoal = goal ?: return@launch
+                    
+                    // Helper to make any color "Ultra Light" (High luminance)
+                    fun forceLighten(color: Int): Int {
+                        val hsl = FloatArray(3)
+                        androidx.core.graphics.ColorUtils.colorToHSL(color, hsl)
+                        hsl[1] = hsl[1].coerceAtMost(0.6f) // More de-saturated for extreme pastel
+                        hsl[2] = 0.85f // Even higher brightness (94%)
+                        return androidx.core.graphics.ColorUtils.HSLToColor(hsl)
+                    }
+
+                    val baseColor = palette.getLightVibrantColor(
+                        palette.getVibrantColor(
+                            palette.getLightMutedColor(Color.White.toArgb())
+                        )
+                    )
+
+                    val ultraLightColor = forceLighten(baseColor)
+
+                    val updatedGoal = currentGoal.copy(
+                        backgroundImagePath = path,
+                        customPrimary = ultraLightColor,
+                        customOnSurface = ultraLightColor,
+                        customSecondaryContainer = palette.getDarkMutedColor(0)
+                    )
+                    repository.updateGoal(updatedGoal)
+                    SavingsWidget().updateAll(context)
+                }
+            }
+        }
+    }
 
     if (goal == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -101,67 +157,56 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = 20.dp, vertical = if (isHighRes) 8.dp else 4.dp),
+            verticalArrangement = Arrangement.spacedBy(if (isHighRes) 16.dp else 10.dp)
         ) {
-            // Preview Card
+            // Background Image Picker
             Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh
+                onClick = {
+                    if (goal?.backgroundImagePath.isNullOrEmpty()) {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    } else {
+                        scope.launch {
+                            repository.updateGoal(goal!!.copy(
+                                backgroundImagePath = null,
+                                customPrimary = null,
+                                customOnSurface = null,
+                                customSecondaryContainer = null
+                            ))
+                            SavingsWidget().updateAll(context)
+                        }
+                    }
+                },
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainerLow
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(if (isHighRes) 12.dp else 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        if (emoji.isNotEmpty()) "$emoji $name" else name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    
-                    val progressValue = (savedAmount.toDoubleOrNull() ?: 0.0) / (targetAmount.toDoubleOrNull() ?: 1.0).coerceAtLeast(0.1)
-                    val progress = progressValue.toFloat().coerceIn(0f, 1f)
-
-                    WavyProgressIndicator(
-                        progress = progress,
-                        isWavy = isWavy,
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier.fillMaxWidth().height(18.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Column {
-                            Text(
-                                "Saved",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                "$currency$savedAmount",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        Box(
+                            modifier = Modifier
+                                .size(if (isHighRes) 36.dp else 30.dp)
+                                .background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.medium),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                if (goal?.backgroundImagePath.isNullOrEmpty()) Icons.Default.AddPhotoAlternate else Icons.Default.HideImage,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
                             )
                         }
-                        Column(horizontalAlignment = Alignment.End) {
+                        Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
+                        Column {
                             Text(
-                                "Target",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                "$currency$targetAmount",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                if (goal?.backgroundImagePath.isNullOrEmpty()) "Set Background Image" else "Remove Background",
+                                style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
@@ -177,14 +222,14 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
+                        .padding(if (isHighRes) 12.dp else 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                         Box(
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(if (isHighRes) 36.dp else 30.dp)
                                 .background(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.medium),
                             contentAlignment = Alignment.Center
                         ) {
@@ -192,14 +237,14 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                                 if (isWavy) Icons.Default.Waves else Icons.Default.LinearScale,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
                             )
                         }
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
                         Column {
                             Text(
                                 "Expressive Style",
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -207,13 +252,22 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     Switch(
                         checked = isWavy,
                         onCheckedChange = { isWavy = it },
-                        modifier = Modifier.scale(0.9f)
+                        thumbContent = if (isWavy) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        } else null,
+                        modifier = Modifier.scale(if (isHighRes) 0.9f else 0.8f)
                     )
                 }
             }
 
             // Fields
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(if (isHighRes) 12.dp else 8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -221,10 +275,11 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     leadingIcon = { Icon(Icons.Default.Savings, null) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large,
-                    singleLine = true
+                    singleLine = true,
+                    textStyle = if (isHighRes) LocalTextStyle.current else MaterialTheme.typography.bodyMedium
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = emoji,
                         onValueChange = { emoji = it },
@@ -232,7 +287,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                         leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.large,
-                        singleLine = true
+                        singleLine = true,
+                        textStyle = if (isHighRes) LocalTextStyle.current else MaterialTheme.typography.bodyMedium
                     )
 
                     OutlinedTextField(
@@ -242,7 +298,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                         leadingIcon = { Icon(Icons.Default.AttachMoney, null) },
                         modifier = Modifier.weight(1f),
                         shape = MaterialTheme.shapes.large,
-                        singleLine = true
+                        singleLine = true,
+                        textStyle = if (isHighRes) LocalTextStyle.current else MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -254,7 +311,8 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large,
-                    singleLine = true
+                    singleLine = true,
+                    textStyle = if (isHighRes) LocalTextStyle.current else MaterialTheme.typography.bodyMedium
                 )
 
                 OutlinedTextField(
@@ -265,52 +323,126 @@ fun GoalEditScreen(repository: GoalRepository, modifier: Modifier = Modifier) {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large,
-                    singleLine = true
+                    singleLine = true,
+                    textStyle = if (isHighRes) LocalTextStyle.current else MaterialTheme.typography.bodyMedium
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = {
-                    val updatedGoal = Goal(
-                        name = name,
-                        emoji = emoji,
-                        targetAmount = targetAmount.toDoubleOrNull() ?: 0.0,
-                        savedAmount = savedAmount.toDoubleOrNull() ?: 0.0,
-                        currency = currency,
-                        isWavy = isWavy
-                    )
-                    scope.launch {
-                        repository.updateGoal(updatedGoal)
-                        SavingsWidget().updateAll(repository.context)
-                        isSaved = true
-                        delay(2000)
-                        isSaved = false
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = buttonColor,
-                    contentColor = contentColor
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Icon(
-                    if (isSaved) Icons.Default.DoneAll else Icons.Default.Check,
-                    contentDescription = null
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    if (isSaved) "Saved Successfully!" else "Save Changes",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            repository.resetGoal()
+                            SavingsWidget().updateAll(context)
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .height(64.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Icon(Icons.Default.Refresh, contentDescription = "Reset Goal")
+                }
+
+                Button(
+                    onClick = {
+                        val currentGoal = goal ?: return@Button
+                        val updatedGoal = currentGoal.copy(
+                            name = name,
+                            emoji = emoji,
+                            targetAmount = targetAmount.toDoubleOrNull() ?: 0.0,
+                            savedAmount = savedAmount.toDoubleOrNull() ?: 0.0,
+                            currency = currency,
+                            isWavy = isWavy
+                        )
+                        scope.launch {
+                            repository.updateGoal(updatedGoal)
+                            SavingsWidget().updateAll(repository.context)
+                            isSaved = true
+                            delay(2000)
+                            isSaved = false
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(64.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = contentColor
+                    )
+                ) {
+                    Icon(
+                        if (isSaved) Icons.Default.DoneAll else Icons.Default.Check,
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        if (isSaved) "Saved!" else "Save Changes",
+                        style = if (isHighRes) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(if (isHighRes) 8.dp else 4.dp))
         }
+    }
+}
+
+private fun processImage(context: Context, uri: Uri): Pair<String, Palette>? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+        
+        if (originalBitmap == null) return null
+        
+        // Resize bitmap to avoid "Can't show content" error (RemoteViews memory limit)
+        val maxDimension = 600
+        val width = originalBitmap.width
+        val height = originalBitmap.height
+        val scale = maxDimension.toFloat() / Math.max(width, height).coerceAtLeast(1)
+        
+        val bitmap = if (scale < 1f) {
+            Bitmap.createScaledBitmap(
+                originalBitmap,
+                (width * scale).toInt(),
+                (height * scale).toInt(),
+                true
+            )
+        } else {
+            originalBitmap
+        }
+        
+        // Extract colors
+        val palette = Palette.from(bitmap).generate()
+        
+        // Save to internal storage
+        val file = File(context.filesDir, "widget_bg.jpg")
+        val out = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, out) // Lower quality to save space
+        out.flush()
+        out.close()
+        
+        if (bitmap != originalBitmap) bitmap.recycle()
+        originalBitmap.recycle()
+        
+        Pair(file.absolutePath, palette)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }

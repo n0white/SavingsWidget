@@ -22,19 +22,44 @@ class GoalRepository(val context: Context) {
         val KEY_IS_WAVY = booleanPreferencesKey("goal_is_wavy")
         val KEY_MONTH_START_AMOUNT = doublePreferencesKey("month_start_amount")
         val KEY_LAST_UPDATE_MONTH = intPreferencesKey("last_update_month")
+        val KEY_BG_IMAGE = stringPreferencesKey("bg_image_path")
+        val KEY_COLOR_PRIMARY = intPreferencesKey("color_primary")
+        val KEY_COLOR_ON_SURFACE = intPreferencesKey("color_on_surface")
+        val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("color_secondary_container")
     }
 
     val goalFlow: Flow<Goal> = context.dataStore.data.map { prefs ->
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+        val storedMonth = prefs[KEY_LAST_UPDATE_MONTH] ?: -1
+        val savedAmount = prefs[KEY_SAVED] ?: 0.0
+        
+        // Automatically detect month change even before an update is saved
+        val effectiveStartAmount = if (currentMonth != storedMonth && storedMonth != -1) {
+            savedAmount
+        } else {
+            prefs[KEY_MONTH_START_AMOUNT] ?: 0.0
+        }
+
         Goal(
             name = prefs[KEY_NAME] ?: "Savings Goal",
             emoji = prefs[KEY_EMOJI] ?: "💰",
-            savedAmount = prefs[KEY_SAVED] ?: 0.0,
+            savedAmount = savedAmount,
             targetAmount = prefs[KEY_TARGET] ?: 1000.0,
             currency = prefs[KEY_CURRENCY] ?: "$",
             isWavy = prefs[KEY_IS_WAVY] ?: true,
-            startOfMonthAmount = prefs[KEY_MONTH_START_AMOUNT] ?: 0.0,
-            lastUpdateMonth = prefs[KEY_LAST_UPDATE_MONTH] ?: -1
+            startOfMonthAmount = effectiveStartAmount,
+            lastUpdateMonth = if (currentMonth != storedMonth && storedMonth != -1) currentMonth else storedMonth,
+            backgroundImagePath = prefs[KEY_BG_IMAGE],
+            customPrimary = prefs[KEY_COLOR_PRIMARY],
+            customOnSurface = prefs[KEY_COLOR_ON_SURFACE],
+            customSecondaryContainer = prefs[KEY_COLOR_SECONDARY_CONTAINER]
         )
+    }
+
+    suspend fun resetGoal() {
+        context.dataStore.edit { prefs ->
+            prefs.clear()
+        }
     }
 
     suspend fun updateGoal(goal: Goal) {
@@ -50,14 +75,17 @@ class GoalRepository(val context: Context) {
             prefs[KEY_TARGET] = goal.targetAmount
             prefs[KEY_CURRENCY] = goal.currency
             prefs[KEY_IS_WAVY] = goal.isWavy
+            prefs[KEY_BG_IMAGE] = goal.backgroundImagePath ?: ""
+            
+            goal.customPrimary?.let { prefs[KEY_COLOR_PRIMARY] = it } ?: prefs.remove(KEY_COLOR_PRIMARY)
+            goal.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)
+            goal.customSecondaryContainer?.let { prefs[KEY_COLOR_SECONDARY_CONTAINER] = it } ?: prefs.remove(KEY_COLOR_SECONDARY_CONTAINER)
             
             // Monthly efficiency logic
             if (currentMonth != storedMonth) {
-                // New month detected
                 prefs[KEY_LAST_UPDATE_MONTH] = currentMonth
                 prefs[KEY_MONTH_START_AMOUNT] = storedSavedAmount
             } else if (prefs[KEY_MONTH_START_AMOUNT] == null) {
-                // First time setup
                 prefs[KEY_MONTH_START_AMOUNT] = goal.savedAmount
             }
         }

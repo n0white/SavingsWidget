@@ -1,10 +1,13 @@
 package com.n0white.savingswidget.ui.widget
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.ColorFilter
@@ -25,6 +28,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.n0white.savingswidget.MainActivity
 import com.n0white.savingswidget.data.model.Goal
+import java.io.File
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.PI
@@ -41,19 +45,71 @@ fun SavingsWidgetContent(goal: Goal) {
     val sw = context.resources.configuration.smallestScreenWidthDp
     val isHighRes = sw >= 400
 
+    val isBgImagePresent = !goal.backgroundImagePath.isNullOrEmpty()
+    // Define darkness based on whether customOnSurface is light or dark
+    val isBgImageDark = goal.customOnSurface?.let { 
+        val c = Color(it)
+        (0.299 * c.red + 0.587 * c.green + 0.114 * c.blue) > 0.5 
+    } ?: false
+
+    // Resolve custom colors using user image palette if present, otherwise system Monet
+    val primaryColor = goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it)) } 
+        ?: if (isBgImagePresent) {
+            if (isBgImageDark) colors.primaryContainer else colors.primary
+        } else colors.primary
+
+    val secondaryContainerColor = goal.customSecondaryContainer?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+        ?: if (isBgImagePresent) {
+            if (isBgImageDark) colors.secondaryContainer else colors.secondary
+        } else colors.secondaryContainer
+
+    val onSurfaceColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurface
+    val onSurfaceVariantColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurfaceVariant
+    
+    val tertiaryContainerColor = goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it).copy(alpha = 0.2f)) }
+        ?: if (isBgImagePresent) {
+            if (isBgImageDark) colors.tertiaryContainer else colors.tertiary
+        } else colors.tertiaryContainer
+
+    val onTertiaryContainerColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+        ?: if (isBgImagePresent) {
+            if (isBgImageDark) colors.onTertiaryContainer else colors.onTertiary
+        } else colors.onTertiaryContainer
+
     GlanceTheme {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
-                .padding(horizontal = 16.dp, vertical = 12.dp) 
                 .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java)))
         ) {
-            Column(
-                modifier = GlanceModifier.fillMaxSize()
-            ) {
+            // Background Image
+            if (!goal.backgroundImagePath.isNullOrEmpty()) {
+                val file = File(goal.backgroundImagePath)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    if (bitmap != null) {
+                        Image(
+                            provider = ImageProvider(bitmap),
+                            contentDescription = null,
+                            contentScale = androidx.glance.layout.ContentScale.Crop,
+                            modifier = GlanceModifier.fillMaxSize().cornerRadius(24.dp)
+                        )
+                        // Dark overlay for better readability on images
+                        Box(
+                            modifier = GlanceModifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.5f))
+                                .cornerRadius(24.dp)
+                        ) {}
+                    }
+                }
+            }
 
+            Column(
+                modifier = GlanceModifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
                 // 1. Header
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
@@ -64,14 +120,13 @@ fun SavingsWidgetContent(goal: Goal) {
                             text = "Savings",
                             style = TextStyle(
                                 fontSize = if (isHighRes) 11.sp else 10.sp, 
-                                color = colors.onSurfaceVariant
+                                color = onSurfaceVariantColor
                             )
                         )
                         val density = context.resources.displayMetrics.density
                         val baseFontSize = if (isHighRes) 21.sp else 19.sp
                         val reducedFontSize = if (isHighRes) 17.sp else 16.sp
                         
-                        // We calculate available space: Total Width - Padding(32dp) - EmojiSpace(48dp) - Gap(12dp)
                         val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
                         
                         val finalFontSize = if (!isSmall) {
@@ -91,7 +146,7 @@ fun SavingsWidgetContent(goal: Goal) {
                             style = TextStyle(
                                 fontSize = finalFontSize,
                                 fontWeight = FontWeight.Medium,
-                                color = colors.onSurface
+                                color = onSurfaceColor
                             ),
                             maxLines = 2
                         )
@@ -103,7 +158,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         Box(
                             modifier = GlanceModifier
                                 .size(if (isHighRes) 48.dp else 44.dp)
-                                .background(colors.secondaryContainer) 
+                                .background(tertiaryContainerColor)
                                 .cornerRadius(if (isHighRes) 14.dp else 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -118,34 +173,43 @@ fun SavingsWidgetContent(goal: Goal) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
 
                 // 2. Middle section (Progress block)
-                Column(modifier = GlanceModifier.fillMaxWidth()
-                    .padding(top = 6.dp)
-                ) {
+                Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp)) {
                     if (isSmall) {
                         Text(
                             text = "${goal.currency}${goal.savedAmount.formatAmount()}",
                             style = TextStyle(
                                 fontSize = if (isHighRes) 25.sp else 22.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = colors.primary
+                                color = primaryColor
                             )
                         )
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "of ${goal.currency}${goal.targetAmount.formatAmount()}",
-                                style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = colors.onSurfaceVariant)
+                                style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = onSurfaceVariantColor)
                             )
                             
                             if (goal.savedAmount > 0) {
                                 Spacer(modifier = GlanceModifier.width(6.dp))
-                                MonthlyEfficiencyChip(efficiency = goal.monthlyEfficiency, compact = true, isHighRes = isHighRes)
+                                MonthlyEfficiencyChip(
+                                    efficiency = goal.monthlyEfficiency, 
+                                    compact = true, 
+                                    isHighRes = isHighRes,
+                                    containerColor = tertiaryContainerColor,
+                                    contentColor = onTertiaryContainerColor
+                                )
                             }
                         }
                     } else {
                         // Large Widget
                         if (goal.savedAmount > 0) {
-                            MonthlyEfficiencyChip(efficiency = goal.monthlyEfficiency, isHighRes = isHighRes)
+                            MonthlyEfficiencyChip(
+                                efficiency = goal.monthlyEfficiency, 
+                                isHighRes = isHighRes,
+                                containerColor = tertiaryContainerColor,
+                                contentColor = onTertiaryContainerColor
+                            )
                             Spacer(modifier = GlanceModifier.height(1.dp))
                         }
                         
@@ -158,42 +222,29 @@ fun SavingsWidgetContent(goal: Goal) {
                                 style = TextStyle(
                                     fontSize = if (isHighRes) 36.sp else 31.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = colors.primary
+                                    color = primaryColor
                                 ),
                                 modifier = GlanceModifier.defaultWeight()
                             )
-                            Column(
-                                horizontalAlignment = Alignment.End
-                            ) {
+                            Column(horizontalAlignment = Alignment.End) {
                                 Text(
                                     text = "target",
-                                    style = TextStyle(fontSize = if (isHighRes) 10.sp else 9.sp, color = colors.onSurfaceVariant)
+                                    style = TextStyle(fontSize = if (isHighRes) 10.sp else 9.sp, color = onSurfaceVariantColor)
                                 )
                                 Text(
                                     text = "${goal.currency}${goal.targetAmount.formatAmount()}",
-                                    style = TextStyle(fontSize = if (isHighRes) 14.sp else 12.sp, color = colors.onSurfaceVariant)
+                                    style = TextStyle(fontSize = if (isHighRes) 14.sp else 12.sp, color = onSurfaceVariantColor)
                                 )
                             }
                         }
                     }
-                    if (isSmall) {
-                        // Код для 2х2 (без додаткового спейсера тут)
-                        Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
-                    } else {
-                        // Код для великих
-                        // ... ваші Text ...
-                        Spacer(modifier = GlanceModifier.height(if (isHighRes) 0.dp else 3.dp))
-                    }
-
-
-
-
+                    Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
 
                     // Progress Bar
                     WavyProgressIndicator(
                         progress = goal.progress,
-                        colorProvider = colors.primary,
-                        trackColorProvider = colors.secondaryContainer,
+                        colorProvider = primaryColor,
+                        trackColorProvider = secondaryContainerColor,
                         isWavy = goal.isWavy,
                         modifier = GlanceModifier.fillMaxWidth().height(if (isHighRes) 16.dp else 14.dp)
                     )
@@ -211,7 +262,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         style = TextStyle(
                             fontSize = if (isHighRes) 14.sp else 12.sp,
                             fontWeight = FontWeight.Medium,
-                            color = colors.primary
+                            color = primaryColor
                         )
                     )
                     Spacer(modifier = GlanceModifier.defaultWeight())
@@ -221,7 +272,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         text = "$footerText${goal.currency}${goal.remaining.formatAmount()}",
                         style = TextStyle(
                             fontSize = if (isHighRes) 12.sp else 10.sp,
-                            color = colors.onSurfaceVariant
+                            color = onSurfaceVariantColor
                         )
                     )
                 }
@@ -231,11 +282,20 @@ fun SavingsWidgetContent(goal: Goal) {
 }
 
 @Composable
-fun MonthlyEfficiencyChip(efficiency: Int, compact: Boolean = false, isHighRes: Boolean = false) {
+fun MonthlyEfficiencyChip(
+    efficiency: Int, 
+    compact: Boolean = false, 
+    isHighRes: Boolean = false,
+    containerColor: ColorProvider? = null,
+    contentColor: ColorProvider? = null
+) {
     val colors = GlanceTheme.colors
+    val finalContainer = containerColor ?: colors.tertiaryContainer
+    val finalContent = contentColor ?: colors.onTertiaryContainer
+    
     Box(
         modifier = GlanceModifier
-            .background(colors.tertiaryContainer)
+            .background(finalContainer)
             .cornerRadius(10.dp)
             .padding(
                 horizontal = if (compact) 4.dp else (if (isHighRes) 10.dp else 8.dp), 
@@ -243,12 +303,13 @@ fun MonthlyEfficiencyChip(efficiency: Int, compact: Boolean = false, isHighRes: 
             ),
         contentAlignment = Alignment.Center
     ) {
+        val sign = if (efficiency > 0) "+" else ""
         Text(
-            text = if (compact) "+$efficiency%" else "+$efficiency% this month",
+            text = if (compact) "$sign$efficiency%" else "$sign$efficiency% this month",
             style = TextStyle(
                 fontSize = if (compact) 8.sp else (if (isHighRes) 10.sp else 9.sp),
                 fontWeight = FontWeight.Bold,
-                color = colors.onTertiaryContainer
+                color = finalContent
             )
         )
     }
@@ -269,8 +330,6 @@ fun WavyProgressIndicator(
     val density = context.resources.displayMetrics.density
     val size = LocalSize.current
     
-    // Width logic: We calculate the actual expected width in DP based on the widget size.
-    // Standard horizontal padding for our widget is 16.dp * 2 = 32.dp.
     val actualWidthDp = if (size.width.value > 0) (size.width.value.toInt() - 32).coerceAtLeast(50) else 160
     val heightDp = 18
     
@@ -283,7 +342,6 @@ fun WavyProgressIndicator(
             provider = ImageProvider(trackBitmap),
             contentDescription = null,
             colorFilter = ColorFilter.tint(trackColorProvider),
-            // Important: Use FillBounds but with a bitmap that MATCHES the container's width
             contentScale = androidx.glance.layout.ContentScale.FillBounds,
             modifier = GlanceModifier.fillMaxSize()
         )
@@ -309,7 +367,7 @@ private fun createProgressMaskBitmap(
     isTrack: Boolean
 ): Bitmap {
     val strokeWidth = 5f * density
-    val padding = strokeWidth / 2f + 2f // Safety margin to avoid clipping rounded caps
+    val padding = strokeWidth / 2f + 2f 
     
     val width = (widthDp * density + padding * 2).toInt().coerceAtLeast(1)
     val height = (heightDp * density).toInt().coerceAtLeast(1)
@@ -351,8 +409,6 @@ private fun createProgressMaskBitmap(
             if (isWavy) {
                 val path = Path()
                 path.moveTo(padding, centerY)
-                // wavelength is now fixed in PIXELS relative to DENSITY, 
-                // so it stays consistent regardless of container width.
                 val waveLength = 32f * density
                 val waveHeight = 5f * density
                 
@@ -374,10 +430,6 @@ private fun createProgressMaskBitmap(
     return bitmap
 }
 
-/**
- * Calculates whether the text fits in the given width.
- * Returns [reducedSize] if it overflows, otherwise [baseSize].
- */
 private fun getDynamicFontSize(
     text: String,
     maxWidth: androidx.compose.ui.unit.Dp,

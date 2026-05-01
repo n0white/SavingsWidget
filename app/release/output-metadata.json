@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.savingswidget",
+  "applicationId": "com.n0white.savingswidget",
   "variantName": "release",
   "elements": [
     {
