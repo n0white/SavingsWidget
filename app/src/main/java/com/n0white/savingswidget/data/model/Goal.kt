@@ -18,7 +18,7 @@ data class Goal(
     val customOnSurface: Int? = null,
     val customSecondaryContainer: Int? = null
 ) {
-    val progress: Float get() = if (targetAmount > 0) (savedAmount / targetAmount).toFloat().coerceIn(0f, 1f) else 0f
+    val progress: Float get() = if (targetAmount > 0) (savedAmount / targetAmount).toFloat().coerceAtLeast(0f) else 0f
     val remaining: Double get() = (targetAmount - savedAmount).coerceAtLeast(0.0)
     
     val monthlyEfficiency: Int get() {

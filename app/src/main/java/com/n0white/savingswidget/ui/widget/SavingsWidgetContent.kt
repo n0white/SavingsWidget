@@ -43,7 +43,7 @@ import kotlin.math.sin
 fun SavingsWidgetContent(goal: Goal) {
     val size = LocalSize.current
     val context = LocalContext.current
-    val isSmall = size.width < 200.dp 
+    val isSmall = size.width < 200.dp
     val colors = GlanceTheme.colors
     
     val sw = context.resources.configuration.smallestScreenWidthDp
@@ -223,14 +223,31 @@ fun SavingsWidgetContent(goal: Goal) {
                             Spacer(modifier = GlanceModifier.height(1.dp))
                         }
                         
+                        val density = context.resources.displayMetrics.density
+                        val savedAmountText = "${goal.currency}${goal.savedAmount.formatAmount()}"
+                        
+                        // --- FONT SIZES FOR SAVED AMOUNT (CHANGE HERE) ---
+                        val baseAmountSize = if (isHighRes) 36.sp else 31.sp
+                        val reducedAmountSize = if (isHighRes) 26.sp else 23.sp
+                        // -------------------------------------------------
+                        
+                        val amountAvailableWidth = (size.width.value.toInt() - 32 - 70).dp
+                        val finalAmountFontSize = getDynamicFontSize(
+                            text = savedAmountText,
+                            maxWidth = amountAvailableWidth,
+                            baseSize = baseAmountSize,
+                            reducedSize = reducedAmountSize,
+                            density = density
+                        )
+
                         Row(
                             modifier = GlanceModifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically 
                         ) {
                             Text(
-                                text = "${goal.currency}${goal.savedAmount.formatAmount()}",
+                                text = savedAmountText,
                                 style = TextStyle(
-                                    fontSize = if (isHighRes) 36.sp else 31.sp,
+                                    fontSize = finalAmountFontSize,
                                     fontWeight = FontWeight.Bold,
                                     color = primaryColor
                                 ),
