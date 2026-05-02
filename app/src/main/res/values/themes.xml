@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Use Material3 as base for better animation support -->
-    <style name="Theme.SavingsWidget" parent="Theme.Material3.DayNight.NoActionBar" />
-
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <item name="postSplashScreenTheme">@style/Theme.SavingsWidget</item>
-    </style>
+    <style name="Theme.SavingsWidget" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar" />
 </resources>

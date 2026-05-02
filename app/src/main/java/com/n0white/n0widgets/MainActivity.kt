@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.data.GoalRepository
 import com.n0white.n0widgets.ui.CounterEditScreen
@@ -45,23 +44,22 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
         goalRepository = GoalRepository(this)
         counterRepository = CounterRepository(this)
         com.n0white.n0widgets.ui.widget.MidnightUpdater.schedule(this)
         enableEdgeToEdge()
         setContent {
-            var currentScreen by remember { 
+            var currentScreen by remember {
                 val screenExtra = intent.getStringExtra("screen")
                 val startScreen = when (screenExtra) {
                     "savings" -> Screen.SAVINGS
                     "counter" -> Screen.COUNTER
                     else -> Screen.MAIN
                 }
-                mutableStateOf(startScreen) 
+                mutableStateOf(startScreen)
             }
-            
+
             setScreen = { currentScreen = it }
 
             SavingsWidgetTheme {
