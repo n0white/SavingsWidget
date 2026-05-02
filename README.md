@@ -1,9 +1,9 @@
-# Savings Widget
+# n0widgets
 
-A beautiful, minimalist Android widget for tracking your savings goals, built with **Jetpack Glance** and **Material You**.
+A beautiful, minimalist Android widgets, built with **Jetpack Glance** and **Material You Expressive**.
 
 ## Features
-- **Material You Design**: Automatically adapts to your wallpaper colors (Monet).
+- **Material You Expressive Design**: Automatically adapts to your wallpaper colors (Monet).
 - **Responsive Layout**: Looks great in 2x2 grid size and expands beautifully for larger layouts.
 - **Dynamic Content**: Shows your goal name, emoji, saved amount, target amount, and progress.
 - **Quick Navigation**: Tap the widget to jump directly into the app and update your progress.
