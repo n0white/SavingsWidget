@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Savings Widget</string>
+    <string name="app_name">n0widgets</string>
+    <string name="widget_savings_name">Savings</string>
     <string name="widget_description">Track your savings goals on your home screen.</string>
+    <string name="widget_counter_name">Counter</string>
+    <string name="counter_widget_description">Track your important dates and countdowns on your home screen.</string>
 </resources>

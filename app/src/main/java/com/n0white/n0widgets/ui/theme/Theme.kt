@@ -1,6 +1,5 @@
-package com.n0white.savingswidget.ui.theme
+package com.n0white.n0widgets.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

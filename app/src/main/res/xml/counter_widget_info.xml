@@ -8,5 +8,5 @@
     android:updatePeriodMillis="0"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:description="@string/widget_description"
+    android:description="@string/counter_widget_description"
     android:previewImage="@drawable/widget_preview" />

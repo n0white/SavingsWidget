@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.n0white.savingswidget"
+    namespace = "com.n0white.n0widgets"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.n0white.savingswidget"
+        applicationId = "com.n0white.n0widgets"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.2"
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -1,4 +1,4 @@
-package com.n0white.savingswidget.ui.widget
+package com.n0white.n0widgets.ui.widget
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -30,8 +30,8 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.n0white.savingswidget.MainActivity
-import com.n0white.savingswidget.data.model.Goal
+import com.n0white.n0widgets.MainActivity
+import com.n0white.n0widgets.data.model.Goal
 import java.io.File
 import java.text.NumberFormat
 import java.util.Locale
@@ -86,7 +86,10 @@ fun SavingsWidgetContent(goal: Goal) {
                 .fillMaxSize()
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
-                .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java)))
+                .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java).apply {
+                    putExtra("screen", "savings")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }))
         ) {
             // Background Image
             if (!goal.backgroundImagePath.isNullOrEmpty()) {
@@ -384,7 +387,7 @@ fun WavyProgressIndicator(
     }
 }
 
-private fun createProgressMaskBitmap(
+fun createProgressMaskBitmap(
     widthDp: Int,
     heightDp: Int,
     progress: Float,
@@ -457,7 +460,7 @@ private fun createProgressMaskBitmap(
     return bitmap
 }
 
-private fun getDynamicFontSize(
+fun getDynamicFontSize(
     text: String,
     maxWidth: androidx.compose.ui.unit.Dp,
     baseSize: androidx.compose.ui.unit.TextUnit,
@@ -473,7 +476,7 @@ private fun getDynamicFontSize(
     return if (measuredWidthPx > maxWidthPx) reducedSize else baseSize
 }
 
-private fun blurBitmap(bitmap: Bitmap, context: android.content.Context, radius: Float): Bitmap {
+fun blurBitmap(bitmap: Bitmap, context: android.content.Context, radius: Float): Bitmap {
     val outBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
     val rs = RenderScript.create(context)
     val blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
@@ -485,4 +488,40 @@ private fun blurBitmap(bitmap: Bitmap, context: android.content.Context, radius:
     allOut.copyTo(outBitmap)
     rs.destroy()
     return outBitmap
+}
+
+fun processImage(context: android.content.Context, uri: android.net.Uri, fileName: String): Pair<String, androidx.palette.graphics.Palette>? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+        
+        if (originalBitmap == null) return null
+        
+        val maxDimension = 600
+        val width = originalBitmap.width
+        val height = originalBitmap.height
+        val scale = maxDimension.toFloat() / Math.max(width, height).coerceAtLeast(1)
+        
+        val bitmap = if (scale < 1f) {
+            Bitmap.createScaledBitmap(originalBitmap, (width * scale).toInt(), (height * scale).toInt(), true)
+        } else {
+            originalBitmap
+        }
+        
+        val palette = androidx.palette.graphics.Palette.from(bitmap).generate()
+        val file = File(context.filesDir, fileName)
+        val out = java.io.FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, out)
+        out.flush()
+        out.close()
+        
+        if (bitmap != originalBitmap) bitmap.recycle()
+        originalBitmap.recycle()
+        
+        Pair(file.absolutePath, palette)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

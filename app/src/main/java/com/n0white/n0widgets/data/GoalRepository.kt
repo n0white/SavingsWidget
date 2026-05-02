@@ -1,9 +1,9 @@
-package com.n0white.savingswidget.data
+package com.n0white.n0widgets.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
-import com.n0white.savingswidget.data.model.Goal
+import com.n0white.n0widgets.data.model.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

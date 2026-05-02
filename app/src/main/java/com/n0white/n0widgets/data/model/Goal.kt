@@ -1,4 +1,4 @@
-package com.n0white.savingswidget.data.model
+package com.n0white.n0widgets.data.model
 
 import kotlin.math.roundToInt
 

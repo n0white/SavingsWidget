@@ -1,4 +1,4 @@
-package com.n0white.savingswidget.ui.theme
+package com.n0white.n0widgets.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

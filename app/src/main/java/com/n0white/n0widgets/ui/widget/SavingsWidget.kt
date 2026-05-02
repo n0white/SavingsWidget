@@ -1,4 +1,4 @@
-package com.n0white.savingswidget.ui.widget
+package com.n0white.n0widgets.ui.widget
 
 import android.content.Context
 import androidx.compose.runtime.collectAsState
@@ -8,8 +8,8 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.appwidget.SizeMode
-import com.n0white.savingswidget.data.GoalRepository
-import com.n0white.savingswidget.data.model.Goal
+import com.n0white.n0widgets.data.GoalRepository
+import com.n0white.n0widgets.data.model.Goal
 
 class SavingsWidget : GlanceAppWidget() {
 

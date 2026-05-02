@@ -1,4 +1,4 @@
-package com.n0white.savingswidget
+package com.n0white.n0widgets
 
 import org.junit.Test
 
