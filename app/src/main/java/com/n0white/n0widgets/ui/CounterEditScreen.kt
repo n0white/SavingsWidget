@@ -1,6 +1,5 @@
 package com.n0white.n0widgets.ui
 
-import android.app.DatePickerDialog
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -14,7 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,8 +36,12 @@ import com.n0white.n0widgets.ui.widget.CounterWidget
 import com.n0white.n0widgets.ui.widget.processImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +66,8 @@ fun CounterEditScreen(
     var isWavy by remember { mutableStateOf(true) }
     var isBlurEnabled by remember { mutableStateOf(false) }
     var backgroundImagePath by remember { mutableStateOf<String?>(null) }
+    var showStartDatePicker by remember { mutableStateOf(false) }
+    var showTargetDatePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(counter) {
         if (!initialized && counter != null) {
@@ -140,78 +146,50 @@ fun CounterEditScreen(
     val bottomShape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
     val singleShape = RoundedCornerShape(24.dp)
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = if (isHighRes) 8.dp else 4.dp),
-            verticalArrangement = Arrangement.spacedBy(if (isHighRes) 16.dp else 10.dp)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(if (isHighRes) 24.dp else 16.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Surface(
-                    onClick = {
-                        if (backgroundImagePath.isNullOrEmpty()) {
-                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                        } else {
-                            scope.launch {
-                                val currentCounter = counter ?: return@launch
-                                repository.updateCounter(
-                                    currentCounter.copy(
-                                        backgroundImagePath = null,
-                                        customPrimary = null,
-                                        customOnSurface = null,
-                                        customSecondaryContainer = null
-                                    )
-                                )
-                                CounterWidget().updateAll(context)
-                            }
-                        }
-                    },
-                    shape = topShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 80.dp)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            Icon(
-                                if (backgroundImagePath.isNullOrEmpty()) Icons.Default.AddPhotoAlternate else Icons.Default.HideImage,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.set_background_image) else stringResource(R.string.remove_background),
-                                    style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.choose_photo_gallery) else stringResource(R.string.clear_current_background),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Column {
+                Text(
+                    text = stringResource(R.string.settings_category_appearance),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 12.dp, bottom = 12.dp)
+                )
 
-                if (!backgroundImagePath.isNullOrEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
                     Surface(
-                        onClick = { isBlurEnabled = !isBlurEnabled },
-                        shape = middleShape,
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        onClick = {
+                            if (backgroundImagePath.isNullOrEmpty()) {
+                                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            } else {
+                                scope.launch {
+                                    val currentCounter = counter ?: return@launch
+                                    repository.updateCounter(
+                                        currentCounter.copy(
+                                            backgroundImagePath = null,
+                                            customPrimary = null,
+                                            customOnSurface = null,
+                                            customSecondaryContainer = null
+                                        )
+                                    )
+                                    CounterWidget().updateAll(context)
+                                }
+                            }
+                        },
+                        shape = topShape,
+                        color = MaterialTheme.colorScheme.surfaceBright,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -224,7 +202,7 @@ fun CounterEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    Icons.Default.BlurOn,
+                                    if (backgroundImagePath.isNullOrEmpty()) Icons.Outlined.AddPhotoAlternate else Icons.Outlined.HideImage,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -232,25 +210,179 @@ fun CounterEditScreen(
                                 Spacer(Modifier.width(16.dp))
                                 Column {
                                     Text(
-                                        text = stringResource(R.string.blur_background),
+                                        text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.set_background_image) else stringResource(R.string.remove_background),
                                         style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Medium
                                     )
                                     Text(
-                                        text = stringResource(R.string.apply_blur_effect),
+                                        text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.choose_photo_gallery) else stringResource(R.string.clear_current_background),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (!backgroundImagePath.isNullOrEmpty()) {
+                        Surface(
+                            onClick = { isBlurEnabled = !isBlurEnabled },
+                            shape = middleShape,
+                            color = MaterialTheme.colorScheme.surfaceBright,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .defaultMinSize(minHeight = 80.dp)
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                    Icon(
+                                        Icons.Outlined.BlurOn,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(Modifier.width(16.dp))
+                                    Column {
+                                        Text(
+                                            text = stringResource(R.string.blur_background),
+                                            style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.apply_blur_effect),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                Switch(
+                                    checked = isBlurEnabled,
+                                    onCheckedChange = { isBlurEnabled = it },
+                                    modifier = Modifier
+                                        .scale(if (isHighRes) 1.1f else 1.0f)
+                                        .padding(start = 12.dp),
+                                    thumbContent = if (isBlurEnabled) {
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Surface(
+                        onClick = { isWavy = !isWavy },
+                        shape = middleShape,
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 80.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                Icon(
+                                    if (isWavy) Icons.Outlined.Waves else Icons.Outlined.LinearScale,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.expressive_style),
+                                        style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.use_wavy_shapes),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
                             Switch(
-                                checked = isBlurEnabled,
-                                onCheckedChange = { isBlurEnabled = it },
-                                modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
-                                thumbContent = if (isBlurEnabled) {
+                                checked = isWavy,
+                                onCheckedChange = { isWavy = it },
+                                modifier = Modifier
+                                    .scale(if (isHighRes) 1.1f else 1.0f)
+                                    .padding(start = 12.dp),
+                                thumbContent = if (isWavy) {
                                     {
                                         Icon(
-                                            imageVector = Icons.Filled.Check,
+                                            imageVector = Icons.Outlined.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    Surface(
+                        onClick = { formatMode = if (formatMode == CounterFormat.DAYS_ONLY) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
+                        shape = bottomShape,
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 80.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                Icon(
+                                    Icons.Outlined.FormatListNumbered,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = if (formatMode == CounterFormat.DAYS_ONLY) stringResource(R.string.format_days_only) else stringResource(R.string.format_ymd),
+                                        style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.change_time_display),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = formatMode == CounterFormat.YMD,
+                                onCheckedChange = { formatMode = if (it) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
+                                modifier = Modifier
+                                    .scale(if (isHighRes) 1.1f else 1.0f)
+                                    .padding(start = 12.dp),
+                                thumbContent = if (formatMode == CounterFormat.YMD) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Check,
                                             contentDescription = null,
                                             modifier = Modifier.size(SwitchDefaults.IconSize),
                                         )
@@ -262,181 +394,87 @@ fun CounterEditScreen(
                         }
                     }
                 }
-
-                Surface(
-                    onClick = { isWavy = !isWavy },
-                    shape = middleShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 80.dp)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            Icon(
-                                if (isWavy) Icons.Default.Waves else Icons.Default.LinearScale,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.expressive_style),
-                                    style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = stringResource(R.string.use_wavy_shapes),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        Switch(
-                            checked = isWavy,
-                            onCheckedChange = { isWavy = it },
-                            modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
-                            thumbContent = if (isWavy) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Filled.Check,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            } else {
-                                null
-                            }
-                        )
-                    }
-                }
-
-                Surface(
-                    onClick = { formatMode = if (formatMode == CounterFormat.DAYS_ONLY) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
-                    shape = bottomShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .defaultMinSize(minHeight = 80.dp)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            Icon(
-                                Icons.Default.FormatListNumbered,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(Modifier.width(16.dp))
-                            Column {
-                                Text(
-                                    text = if (formatMode == CounterFormat.DAYS_ONLY) stringResource(R.string.format_days_only) else stringResource(R.string.format_ymd),
-                                    style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = stringResource(R.string.change_time_display),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        Switch(
-                            checked = formatMode == CounterFormat.YMD,
-                            onCheckedChange = { formatMode = if (it) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
-                            modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
-                            thumbContent = if (formatMode == CounterFormat.YMD) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Filled.Check,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            } else {
-                                null
-                            }
-                        )
-                    }
-                }
             }
 
-            Card(
-                shape = singleShape,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(if (isHighRes) 12.dp else 8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text(stringResource(R.string.counter_name)) },
-                        leadingIcon = { Icon(Icons.Default.Label, null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        singleLine = true
-                    )
+            Column {
+                Text(
+                    text = stringResource(R.string.settings_category_content),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 12.dp, bottom = 12.dp, top = 0.dp)
+                )
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Card(
+                    shape = singleShape,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(if (isHighRes) 12.dp else 8.dp)
+                    ) {
                         OutlinedTextField(
-                            value = emoji,
-                            onValueChange = { emoji = it },
-                            label = { Text(stringResource(R.string.emoji)) },
-                            leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
-                            modifier = Modifier.weight(1f),
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text(stringResource(R.string.counter_name)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Label, null) },
+                            modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                             singleLine = true
                         )
-                    }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM yyyy") }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = emoji,
+                                onValueChange = { emoji = it },
+                                label = { Text(stringResource(R.string.emoji)) },
+                                leadingIcon = { Icon(Icons.Outlined.EmojiEmotions, null) },
+                                modifier = Modifier.weight(1f),
+                                shape = MaterialTheme.shapes.medium,
+                                singleLine = true
+                            )
+                        }
 
-                        OutlinedTextField(
-                            value = startDate.format(dateFormatter),
-                            onValueChange = {},
-                            label = { Text(stringResource(R.string.start_date)) },
-                            readOnly = true,
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    showDatePicker(context, startDate) { startDate = it }
-                                }) {
-                                    Icon(Icons.Default.CalendarToday, null)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            val formatDate = remember {
+                                { date: LocalDate ->
+                                    val month = date.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                        .replace(".", "")
+                                        .take(3)
+                                    val day = date.dayOfMonth.toString().padStart(2, '0')
+                                    "$day $month ${date.year}"
                                 }
-                            },
-                            modifier = Modifier.weight(1f),
-                        shape = MaterialTheme.shapes.medium
-                        )
+                            }
 
-                        OutlinedTextField(
-                            value = targetDate.format(dateFormatter),
-                            onValueChange = {},
-                            label = { Text(stringResource(R.string.target_date)) },
-                            readOnly = true,
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    showDatePicker(context, targetDate) { targetDate = it }
-                                }) {
-                                    Icon(Icons.Default.Event, null)
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                        shape = MaterialTheme.shapes.medium
-                        )
+                            OutlinedTextField(
+                                value = formatDate(startDate),
+                                onValueChange = {},
+                                label = { Text(stringResource(R.string.start_date)) },
+                                readOnly = true,
+                                trailingIcon = {
+                                    IconButton(onClick = { showStartDatePicker = true }) {
+                                        Icon(Icons.Outlined.CalendarToday, null)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+
+                            OutlinedTextField(
+                                value = formatDate(targetDate),
+                                onValueChange = {},
+                                label = { Text(stringResource(R.string.target_date)) },
+                                readOnly = true,
+                                trailingIcon = {
+                                    IconButton(onClick = { showTargetDatePicker = true }) {
+                                        Icon(Icons.Outlined.Event, null)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                        }
                     }
                 }
             }
@@ -446,15 +484,13 @@ fun CounterEditScreen(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
-                .clip(RoundedCornerShape(32.dp)),
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            tonalElevation = 8.dp,
-            shadowElevation = 12.dp
+                .fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceContainerHighest
         ) {
             Row(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .navigationBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -472,7 +508,7 @@ fun CounterEditScreen(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.reset))
+                    Icon(Icons.Outlined.Refresh, contentDescription = stringResource(R.string.reset))
                 }
 
                 Button(
@@ -502,27 +538,60 @@ fun CounterEditScreen(
                     shape = MaterialTheme.shapes.extraLarge,
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor, contentColor = contentColor)
                 ) {
-                    Icon(if (isSaved) Icons.Default.DoneAll else Icons.Default.Check, null)
+                    Icon(if (isSaved) Icons.Outlined.DoneAll else Icons.Outlined.Check, null)
                     Spacer(Modifier.width(12.dp))
-                    Text(if (isSaved) stringResource(R.string.saved_success) else stringResource(R.string.save_changes), fontWeight = FontWeight.ExtraBold)
+                    Text(if (isSaved) stringResource(R.string.saved_success) else stringResource(R.string.save_changes), fontWeight = FontWeight.Medium)
                 }
             }
         }
     }
+
+    if (showStartDatePicker) {
+        MyDatePickerDialog(
+            initialDate = startDate,
+            onDateSelected = { startDate = it },
+            onDismiss = { showStartDatePicker = false }
+        )
+    }
+
+    if (showTargetDatePicker) {
+        MyDatePickerDialog(
+            initialDate = targetDate,
+            onDateSelected = { targetDate = it },
+            onDismiss = { showTargetDatePicker = false }
+        )
+    }
 }
 
-private fun showDatePicker(
-    context: android.content.Context,
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MyDatePickerDialog(
     initialDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    onDismiss: () -> Unit
 ) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+    )
+
     DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            onDateSelected(LocalDate.of(year, month + 1, dayOfMonth))
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                datePickerState.selectedDateMillis?.let {
+                    onDateSelected(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate())
+                }
+                onDismiss()
+            }) {
+                Text("OK")
+            }
         },
-        initialDate.year,
-        initialDate.monthValue - 1,
-        initialDate.dayOfMonth
-    ).show()
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
 }

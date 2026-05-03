@@ -22,6 +22,10 @@
     <string name="save_changes">Зберегти зміни</string>
     <string name="saved_success">Збережено!</string>
 
+    <!-- Categories -->
+    <string name="settings_category_appearance">Вигляд</string>
+    <string name="settings_category_content">Вміст</string>
+
     <!-- Savings Settings -->
     <string name="savings_settings_title">Налаштування заощаджень</string>
     <string name="set_background_image">Встановити фонове зображення</string>
@@ -52,10 +56,10 @@
     <string name="counter_label">Лічильник</string>
     <string name="target_label">ціль</string>
     <string name="progress_of">з %1$s%2$s</string>
-    <string name="remaining_label">залишилося: </string>
-    <string name="remaining_label_short">зал: </string>
-    <string name="passed_label">вже минуло: </string>
-    <string name="passed_label_short">минуло: </string>
+    <string name="remaining_label">"залишилося "</string>
+    <string name="remaining_label_short">"ще "</string>
+    <string name="passed_label">"вже минуло "</string>
+    <string name="passed_label_short">"минуло "</string>
     <string name="to_target">до %1$s</string>
     <string name="efficiency_suffix">%1$s цього місяця</string>
 
@@ -79,4 +83,5 @@
     <string name="motivation_bit_more">Ще зовсім трохи</string>
     <string name="motivation_bit_more_compact">Ще трішки</string>
     <string name="motivation_keep_going">Продовжуйте в тому ж дусі</string>
+    <string name="motivation_keep_going_compact">Вперед</string>
 </resources>

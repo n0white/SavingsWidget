@@ -53,9 +53,9 @@ fun SavingsWidgetTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
@@ -63,9 +63,12 @@ fun SavingsWidgetTheme(
         else -> LightColorScheme
     }
 
+    val language = context.resources.configuration.locales[0].language
+    val typography = if (language == "uk" || language == "ru") CyrillicTypography else Typography
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

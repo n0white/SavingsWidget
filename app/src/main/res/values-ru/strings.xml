@@ -22,6 +22,10 @@
     <string name="save_changes">Сохранить изменения</string>
     <string name="saved_success">Сохранено!</string>
 
+    <!-- Categories -->
+    <string name="settings_category_appearance">Внешний вид</string>
+    <string name="settings_category_content">Содержимое</string>
+
     <!-- Savings Settings -->
     <string name="savings_settings_title">Настройки накоплений</string>
     <string name="set_background_image">Установить фоновое изображение</string>
@@ -52,10 +56,10 @@
     <string name="counter_label">Счетчик</string>
     <string name="target_label">цель</string>
     <string name="progress_of">из %1$s%2$s</string>
-    <string name="remaining_label">осталось: </string>
-    <string name="remaining_label_short">ост: </string>
-    <string name="passed_label">уже прошло: </string>
-    <string name="passed_label_short">прошло: </string>
+    <string name="remaining_label">"осталось "</string>
+    <string name="remaining_label_short">"еще "</string>
+    <string name="passed_label">"уже прошло "</string>
+    <string name="passed_label_short">"прошло "</string>
     <string name="to_target">до %1$s</string>
     <string name="efficiency_suffix">%1$s в этом месяце</string>
 
@@ -77,6 +81,7 @@
     <string name="motivation_soon">Скоро будет</string>
     <string name="motivation_soon_compact">Скоро</string>
     <string name="motivation_bit_more">Еще совсем немного</string>
-    <string name="motivation_bit_more_compact">Еще чуть-чуть</string>
+    <string name="motivation_bit_more_compact">Чуть-чуть</string>
     <string name="motivation_keep_going">Продолжайте в том же духе</string>
+    <string name="motivation_keep_going_compact">Вперед</string>
 </resources>

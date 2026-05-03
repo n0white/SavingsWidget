@@ -70,7 +70,7 @@ data class Counter(
         } else {
             if (targetDate.year == currentYear) "d MMMM" else "d MMMM yyyy"
         }
-        return targetDate.format(DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH))
+        return targetDate.format(DateTimeFormatter.ofPattern(pattern, Locale.getDefault()))
     }
 
     fun getMotivationPhrase(context: Context, isCompact: Boolean = false): String {
@@ -80,7 +80,7 @@ data class Counter(
             days <= 3 -> context.getString(R.string.motivation_very_soon)
             days <= 7 -> context.getString(if (isCompact) R.string.motivation_soon_compact else R.string.motivation_soon)
             days <= 30 -> context.getString(if (isCompact) R.string.motivation_bit_more_compact else R.string.motivation_bit_more)
-            else -> context.getString(R.string.motivation_keep_going)
+            else -> context.getString(if (isCompact) R.string.motivation_keep_going_compact else R.string.motivation_keep_going)
         }
     }
 }

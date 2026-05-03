@@ -11,10 +11,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Savings
-import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Savings
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -70,8 +70,9 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 20.dp, vertical = 48.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -84,12 +85,12 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 NavigationCard(
                     title = stringResource(R.string.main_screen_savings_widget_title),
                     subtitle = stringResource(R.string.main_screen_savings_widget_subtitle),
-                    icon = Icons.Default.Savings,
+                    icon = Icons.Outlined.Savings,
                     onClick = {
                         coroutineScope.launch {
                             delay(150)
@@ -104,7 +105,7 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                 NavigationCard(
                     title = stringResource(R.string.main_screen_counter_widget_title),
                     subtitle = stringResource(R.string.main_screen_counter_widget_subtitle),
-                    icon = Icons.Default.CalendarToday,
+                    icon = Icons.Outlined.CalendarToday,
                     onClick = {
                         coroutineScope.launch {
                             delay(150)
@@ -153,7 +154,7 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Default.Sync,
+                            Icons.Outlined.Sync,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onErrorContainer,
                             modifier = Modifier.size(24.dp)
@@ -166,7 +167,7 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                         Text(
                             text = stringResource(R.string.main_screen_background_updates_title),
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Medium
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -193,7 +194,7 @@ private fun NavigationCard(
     Surface(
         onClick = onClick,
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surfaceBright,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -223,7 +224,7 @@ private fun NavigationCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
@@ -234,7 +235,7 @@ private fun NavigationCard(
             }
 
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

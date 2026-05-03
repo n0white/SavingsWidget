@@ -22,6 +22,10 @@
     <string name="save_changes">Save Changes</string>
     <string name="saved_success">Saved!</string>
 
+    <!-- Categories -->
+    <string name="settings_category_appearance">Appearance</string>
+    <string name="settings_category_content">Content</string>
+
     <!-- Savings Settings -->
     <string name="savings_settings_title">Savings Settings</string>
     <string name="set_background_image">Set Background Image</string>
@@ -52,10 +56,10 @@
     <string name="counter_label">Counter</string>
     <string name="target_label">target</string>
     <string name="progress_of">of %1$s%2$s</string>
-    <string name="remaining_label">remaining: </string>
-    <string name="remaining_label_short">left: </string>
-    <string name="passed_label">already passed: </string>
-    <string name="passed_label_short">passed: </string>
+    <string name="remaining_label">"remaining "</string>
+    <string name="remaining_label_short">"left "</string>
+    <string name="passed_label">"already passed "</string>
+    <string name="passed_label_short">"passed "</string>
     <string name="to_target">to %1$s</string>
     <string name="efficiency_suffix">%1$s this month</string>
 
@@ -77,4 +81,5 @@
     <string name="motivation_bit_more">Just a little more</string>
     <string name="motivation_bit_more_compact">Bit more</string>
     <string name="motivation_keep_going">Keep going</string>
+    <string name="motivation_keep_going_compact">Going</string>
 </resources>

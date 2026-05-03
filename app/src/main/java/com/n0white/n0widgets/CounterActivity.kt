@@ -26,7 +26,7 @@ class CounterActivity : ComponentActivity() {
                 val counter by counterRepository.counterFlow.collectAsState(initial = null)
 
                 ScreenScaffold(
-                    title = { Text(stringResource(R.string.counter_settings_title), fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.counter_settings_title), fontWeight = FontWeight.Medium) },
                     onBack = { finish() },
                     isMain = false
                 ) {

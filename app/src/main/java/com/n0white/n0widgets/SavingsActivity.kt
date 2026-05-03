@@ -26,7 +26,7 @@ class SavingsActivity : ComponentActivity() {
                 val goal by goalRepository.goalFlow.collectAsState(initial = null)
                 
                 ScreenScaffold(
-                    title = { Text(stringResource(R.string.savings_settings_title), fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.savings_settings_title), fontWeight = FontWeight.Medium) },
                     onBack = { finish() },
                     isMain = false
                 ) {
