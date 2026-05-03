@@ -1,5 +1,6 @@
 package com.n0white.n0widgets.ui
 
+import android.R.attr.checked
 import android.app.DatePickerDialog
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,6 +12,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -22,9 +24,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.updateAll
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.data.model.Counter
 import com.n0white.n0widgets.data.model.CounterFormat
@@ -131,6 +135,11 @@ fun CounterEditScreen(
         return
     }
 
+    val topShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val middleShape = RoundedCornerShape(4.dp)
+    val bottomShape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
+    val singleShape = RoundedCornerShape(24.dp)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -138,255 +147,301 @@ fun CounterEditScreen(
             .padding(horizontal = 20.dp, vertical = if (isHighRes) 8.dp else 4.dp),
         verticalArrangement = Arrangement.spacedBy(if (isHighRes) 16.dp else 10.dp)
     ) {
-        // Background Image Picker
-        Surface(
-            onClick = {
-                if (backgroundImagePath.isNullOrEmpty()) {
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                } else {
-                    scope.launch {
-                        val currentCounter = counter ?: return@launch
-                        repository.updateCounter(
-                            currentCounter.copy(
-                                backgroundImagePath = null,
-                                customPrimary = null,
-                                customOnSurface = null,
-                                customSecondaryContainer = null
-                            )
-                        )
-                        CounterWidget().updateAll(context)
-                    }
-                }
-            },
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerLow
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(if (isHighRes) 12.dp else 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .size(if (isHighRes) 36.dp else 30.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.medium),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            if (backgroundImagePath.isNullOrEmpty()) Icons.Default.AddPhotoAlternate else Icons.Default.HideImage,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
-                    Column {
-                        Text(
-                            if (backgroundImagePath.isNullOrEmpty()) "Set Background Image" else "Remove Background",
-                            style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-        }
 
-        // Blur Toggle
-        if (!backgroundImagePath.isNullOrEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Background Image Picker
             Surface(
-                onClick = { isBlurEnabled = !isBlurEnabled },
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceContainerLow
+                onClick = {
+                    if (backgroundImagePath.isNullOrEmpty()) {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    } else {
+                        scope.launch {
+                            val currentCounter = counter ?: return@launch
+                            repository.updateCounter(
+                                currentCounter.copy(
+                                    backgroundImagePath = null,
+                                    customPrimary = null,
+                                    customOnSurface = null,
+                                    customSecondaryContainer = null
+                                )
+                            )
+                            CounterWidget().updateAll(context)
+                        }
+                    }
+                },
+                shape = topShape,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(if (isHighRes) 12.dp else 10.dp),
+                        .defaultMinSize(minHeight = 80.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                        Box(
-                            modifier = Modifier
-                                .size(if (isHighRes) 36.dp else 30.dp)
-                                .background(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.shapes.medium),
-                            contentAlignment = Alignment.Center
-                        ) {
+                        Icon(
+                            if (backgroundImagePath.isNullOrEmpty()) Icons.Default.AddPhotoAlternate else Icons.Default.HideImage,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.set_background_image) else stringResource(R.string.remove_background),
+                                style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if (backgroundImagePath.isNullOrEmpty()) stringResource(R.string.choose_photo_gallery) else stringResource(R.string.clear_current_background),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Blur Toggle
+            if (!backgroundImagePath.isNullOrEmpty()) {
+                Surface(
+                    onClick = { isBlurEnabled = !isBlurEnabled },
+                    shape = middleShape,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 80.dp)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                             Icon(
                                 Icons.Default.BlurOn,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
                             )
+                            Spacer(Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.blur_background),
+                                    style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = stringResource(R.string.apply_blur_effect),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
-                        Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
+                        Switch(
+                            checked = isBlurEnabled,
+                            onCheckedChange = { isBlurEnabled = it },
+                            modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
+                            thumbContent = if (isBlurEnabled) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
+                            } else {
+                                null
+                            }
+                        )
+                    }
+                }
+            }
+
+            Surface(
+                onClick = { isWavy = !isWavy },
+                shape = middleShape,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 80.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        Icon(
+                            if (isWavy) Icons.Default.Waves else Icons.Default.LinearScale,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
                         Column {
                             Text(
-                                "Blur Background",
+                                text = stringResource(R.string.expressive_style),
                                 style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = stringResource(R.string.use_wavy_shapes),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                     Switch(
-                        checked = isBlurEnabled,
-                        onCheckedChange = { isBlurEnabled = it },
-                        modifier = Modifier.scale(if (isHighRes) 0.9f else 0.8f)
+                        checked = isWavy,
+                        onCheckedChange = { isWavy = it },
+                        modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
+                        thumbContent = if (isWavy) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        } else {
+                            null
+                        }
+                    )
+                }
+            }
+
+            // Formatting Toggle
+            Surface(
+                onClick = { formatMode = if (formatMode == CounterFormat.DAYS_ONLY) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
+                shape = bottomShape,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 80.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        Icon(
+                            Icons.Default.FormatListNumbered,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = if (formatMode == CounterFormat.DAYS_ONLY) stringResource(R.string.format_days_only) else stringResource(R.string.format_ymd),
+                                style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = stringResource(R.string.change_time_display),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    Switch(
+                        checked = formatMode == CounterFormat.YMD,
+                        onCheckedChange = { formatMode = if (it) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
+                        modifier = Modifier.scale(if (isHighRes) 1.1f else 1.0f),
+                        thumbContent = if (formatMode == CounterFormat.YMD) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        } else {
+                            null
+                        }
                     )
                 }
             }
         }
 
-        // Expressive Switch
-        Surface(
-            onClick = { isWavy = !isWavy },
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerLow
+        Card(
+            shape = singleShape,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(if (isHighRes) 12.dp else 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(if (isHighRes) 12.dp else 8.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .size(if (isHighRes) 36.dp else 30.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.medium),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            if (isWavy) Icons.Default.Waves else Icons.Default.LinearScale,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
-                    Column {
-                        Text(
-                            "Expressive Style",
-                            style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Switch(
-                    checked = isWavy,
-                    onCheckedChange = { isWavy = it },
-                    modifier = Modifier.scale(if (isHighRes) 0.9f else 0.8f)
-                )
-            }
-        }
-
-        // Formatting Toggle
-        Surface(
-            onClick = { formatMode = if (formatMode == CounterFormat.DAYS_ONLY) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerLow
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(if (isHighRes) 12.dp else 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .size(if (isHighRes) 36.dp else 30.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.medium),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.FormatListNumbered,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(if (isHighRes) 20.dp else 18.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(if (isHighRes) 12.dp else 8.dp))
-                    Column {
-                        Text(
-                            if (formatMode == CounterFormat.DAYS_ONLY) "Format: Days Only" else "Format: Years, Months, Days",
-                            style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Switch(
-                    checked = formatMode == CounterFormat.YMD,
-                    onCheckedChange = { formatMode = if (it) CounterFormat.YMD else CounterFormat.DAYS_ONLY },
-                    modifier = Modifier.scale(if (isHighRes) 0.9f else 0.8f)
-                )
-            }
-        }
-
-        // Fields
-        Column(verticalArrangement = Arrangement.spacedBy(if (isHighRes) 12.dp else 8.dp)) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Counter Name") },
-                leadingIcon = { Icon(Icons.Default.Label, null) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                singleLine = true
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = emoji,
-                    onValueChange = { emoji = it },
-                    label = { Text("Emoji") },
-                    leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
-                    modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.large,
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.counter_name)) },
+                    leadingIcon = { Icon(Icons.Default.Label, null) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
                     singleLine = true
                 )
-            }
 
-            // Date Pickers
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM yyyy") }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = emoji,
+                        onValueChange = { emoji = it },
+                        label = { Text(stringResource(R.string.emoji)) },
+                        leadingIcon = { Icon(Icons.Default.EmojiEmotions, null) },
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.medium,
+                        singleLine = true
+                    )
+                }
 
-                OutlinedTextField(
-                    value = startDate.format(dateFormatter),
-                    onValueChange = {},
-                    label = { Text("Start Date") },
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            showDatePicker(context, startDate) { startDate = it }
-                        }) {
-                            Icon(Icons.Default.CalendarToday, null)
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.large
-                )
+                // Date Pickers
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM yyyy") }
 
-                OutlinedTextField(
-                    value = targetDate.format(dateFormatter),
-                    onValueChange = {},
-                    label = { Text("Target Date") },
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            showDatePicker(context, targetDate) { targetDate = it }
-                        }) {
-                            Icon(Icons.Default.Event, null)
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.large
-                )
+                    OutlinedTextField(
+                        value = startDate.format(dateFormatter),
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.start_date)) },
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                showDatePicker(context, startDate) { startDate = it }
+                            }) {
+                                Icon(Icons.Default.CalendarToday, null)
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                    shape = MaterialTheme.shapes.medium
+                    )
+
+                    OutlinedTextField(
+                        value = targetDate.format(dateFormatter),
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.target_date)) },
+                        readOnly = true,
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                showDatePicker(context, targetDate) { targetDate = it }
+                            }) {
+                                Icon(Icons.Default.Event, null)
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                    shape = MaterialTheme.shapes.medium
+                    )
+                }
             }
         }
 
@@ -410,7 +465,7 @@ fun CounterEditScreen(
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = "Reset")
+                Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.reset))
             }
 
             Button(
@@ -442,7 +497,7 @@ fun CounterEditScreen(
             ) {
                 Icon(if (isSaved) Icons.Default.DoneAll else Icons.Default.Check, null)
                 Spacer(Modifier.width(12.dp))
-                Text(if (isSaved) "Saved!" else "Save Changes", fontWeight = FontWeight.ExtraBold)
+                Text(if (isSaved) stringResource(R.string.saved_success) else stringResource(R.string.save_changes), fontWeight = FontWeight.ExtraBold)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))

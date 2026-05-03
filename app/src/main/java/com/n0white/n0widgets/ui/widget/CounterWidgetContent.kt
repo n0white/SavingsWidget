@@ -20,6 +20,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.n0white.n0widgets.MainActivity
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Counter
 import java.io.File
 import kotlin.math.roundToInt
@@ -70,6 +71,9 @@ fun CounterWidgetContent(counter: Counter) {
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java).apply {
+                    action = "open_counter"
+                    data = android.net.Uri.parse("counter://id/${counter.id}")
+                    putExtra("counter_id", counter.id)
                     putExtra("screen", "counter")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
@@ -112,7 +116,7 @@ fun CounterWidgetContent(counter: Counter) {
                 ) {
                     Column(modifier = GlanceModifier.defaultWeight()) {
                         Text(
-                            text = "Counter",
+                            text = context.getString(R.string.counter_label),
                             style = TextStyle(
                                 fontSize = if (isHighRes) 11.sp else 10.sp, 
                                 color = onSurfaceVariantColor
@@ -171,7 +175,7 @@ fun CounterWidgetContent(counter: Counter) {
                 Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp)) {
                     if (isSmall) {
                         Text(
-                            text = counter.getRemainingTimeString(),
+                            text = counter.getRemainingTimeString(context),
                             style = TextStyle(
                                 fontSize = if (isHighRes) 22.sp else 20.sp,
                                 fontWeight = FontWeight.Bold,
@@ -181,13 +185,13 @@ fun CounterWidgetContent(counter: Counter) {
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "to ${counter.getTargetDateString(isShort = true)}",
+                                text = context.getString(R.string.to_target, counter.getTargetDateString(isShort = true)),
                                 style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = onSurfaceVariantColor)
                             )
                             
                             Spacer(modifier = GlanceModifier.width(6.dp))
                             StatusChip(
-                                text = counter.getMotivationPhrase(true), 
+                                text = counter.getMotivationPhrase(context, true), 
                                 isHighRes = isHighRes,
                                 containerColor = tertiaryContainerColor,
                                 contentColor = onTertiaryContainerColor
@@ -196,7 +200,7 @@ fun CounterWidgetContent(counter: Counter) {
                     } else {
                         // Large Widget
                         StatusChip(
-                            text = counter.getMotivationPhrase(false), 
+                            text = counter.getMotivationPhrase(context, false), 
                             isHighRes = isHighRes,
                             containerColor = tertiaryContainerColor,
                             contentColor = onTertiaryContainerColor
@@ -204,7 +208,7 @@ fun CounterWidgetContent(counter: Counter) {
                         Spacer(modifier = GlanceModifier.height(1.dp))
                         
                         val density = context.resources.displayMetrics.density
-                        val remainingText = counter.getRemainingTimeString()
+                        val remainingText = counter.getRemainingTimeString(context)
                         
                         val baseAmountSize = if (isHighRes) 32.sp else 28.sp
                         val reducedAmountSize = if (isHighRes) 24.sp else 22.sp
@@ -233,7 +237,7 @@ fun CounterWidgetContent(counter: Counter) {
                             )
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "target",
+                                    text = context.getString(R.string.target_label),
                                     style = TextStyle(fontSize = if (isHighRes) 10.sp else 9.sp, color = onSurfaceVariantColor)
                                 )
                                 Text(
@@ -272,9 +276,9 @@ fun CounterWidgetContent(counter: Counter) {
                     )
                     Spacer(modifier = GlanceModifier.defaultWeight())
                     
-                    val footerText = if (isSmall) "passed: " else "already passed: "
+                    val footerLabel = if (isSmall) context.getString(R.string.passed_label_short) else context.getString(R.string.passed_label)
                     Text(
-                        text = "$footerText${counter.getPassedTimeString()}",
+                        text = "$footerLabel${counter.getPassedTimeString(context)}",
                         style = TextStyle(
                             fontSize = if (isHighRes) 12.sp else 10.sp,
                             color = onSurfaceVariantColor

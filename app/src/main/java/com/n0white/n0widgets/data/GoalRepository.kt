@@ -3,6 +3,7 @@ package com.n0white.n0widgets.data
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -42,7 +43,7 @@ class GoalRepository(val context: Context) {
         }
 
         Goal(
-            name = prefs[KEY_NAME] ?: "Savings Goal",
+            name = prefs[KEY_NAME] ?: context.getString(R.string.default_goal_name),
             emoji = prefs[KEY_EMOJI] ?: "💰",
             savedAmount = savedAmount,
             targetAmount = prefs[KEY_TARGET] ?: 1000.0,

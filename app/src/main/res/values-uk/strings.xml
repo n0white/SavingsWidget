@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">n0widgets</string>
+    <string name="widget_savings_name">Заощадження</string>
+    <string name="widget_description">Відстежуйте свої цілі заощаджень на головному екрані.</string>
+    <string name="widget_counter_name">Лічильник</string>
+    <string name="counter_widget_description">Відстежуйте важливі дати та зворотний відлік на головному екрані.</string>
+
+    <string name="main_screen_select_widget_hint">Виберіть віджет для налаштування</string>
+    <string name="main_screen_savings_widget_title">Віджет заощаджень</string>
+    <string name="main_screen_savings_widget_subtitle">Відстежуйте свої фінансові цілі</string>
+    <string name="main_screen_counter_widget_title">Віджет лічильника</string>
+    <string name="main_screen_counter_widget_subtitle">Відстежуйте дати та події</string>
+    <string name="main_screen_background_updates_title">Фонові оновлення</string>
+    <string name="main_screen_background_updates_description">Для автоматичного оновлення віджетів надайте дозволи на фонове виконання.</string>
+
+    <string name="default_goal_name">Ціль заощадження</string>
+    <string name="default_counter_name">Лічильник днів</string>
+
+    <!-- Navigation and General UI -->
+    <string name="back">Назад</string>
+    <string name="reset">Скинути</string>
+    <string name="save_changes">Зберегти зміни</string>
+    <string name="saved_success">Збережено!</string>
+
+    <!-- Savings Settings -->
+    <string name="savings_settings_title">Налаштування заощаджень</string>
+    <string name="set_background_image">Встановити фонове зображення</string>
+    <string name="remove_background">Видалити фон</string>
+    <string name="choose_photo_gallery">Виберіть фото з галереї</string>
+    <string name="clear_current_background">Очистити поточний фон</string>
+    <string name="blur_background">Розмити фон</string>
+    <string name="apply_blur_effect">Застосувати ефект м\'якого розмиття до зображення</string>
+    <string name="expressive_style">Експресивний стиль</string>
+    <string name="use_wavy_shapes">Використовувати хвилясті форми замість стандартних лінійних</string>
+    <string name="goal_name">Назва цілі</string>
+    <string name="emoji">Емодзі</string>
+    <string name="currency">Валюта</string>
+    <string name="target_amount">Цільова сума</string>
+    <string name="saved_amount">Заощаджена сума</string>
+
+    <!-- Counter Settings -->
+    <string name="counter_settings_title">Налаштування лічильника</string>
+    <string name="counter_name">Назва лічильника</string>
+    <string name="start_date">Дата початку</string>
+    <string name="target_date">Цільова дата</string>
+    <string name="format_days_only">Формат: лише дні</string>
+    <string name="format_ymd">Формат: роки, місяці, дні</string>
+    <string name="change_time_display">Змінити спосіб відображення часу, що залишився</string>
+
+    <!-- Widget Content -->
+    <string name="savings_label">Заощадження</string>
+    <string name="counter_label">Лічильник</string>
+    <string name="target_label">ціль</string>
+    <string name="progress_of">з %1$s%2$s</string>
+    <string name="remaining_label">залишилося: </string>
+    <string name="remaining_label_short">зал: </string>
+    <string name="passed_label">вже минуло: </string>
+    <string name="passed_label_short">минуло: </string>
+    <string name="to_target">до %1$s</string>
+    <string name="efficiency_suffix">%1$s цього місяця</string>
+
+    <!-- Counter Logic / Plurals -->
+    <plurals name="days_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дні</item>
+        <item quantity="many">%1$d днів</item>
+        <item quantity="other">%1$d днів</item>
+    </plurals>
+    <string name="years_short">%1$d р</string>
+    <string name="months_short">%1$d м</string>
+    <string name="days_short">%1$d д</string>
+
+    <!-- Motivation Phrases -->
+    <string name="motivation_today">Сьогодні той самий день!</string>
+    <string name="motivation_today_compact">Сьогодні!</string>
+    <string name="motivation_very_soon">Дуже скоро</string>
+    <string name="motivation_soon">Скоро буде</string>
+    <string name="motivation_soon_compact">Скоро</string>
+    <string name="motivation_bit_more">Ще зовсім трохи</string>
+    <string name="motivation_bit_more_compact">Ще трішки</string>
+    <string name="motivation_keep_going">Продовжуйте в тому ж дусі</string>
+</resources>

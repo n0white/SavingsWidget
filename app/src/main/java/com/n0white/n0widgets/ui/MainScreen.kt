@@ -8,6 +8,7 @@ import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
@@ -19,10 +20,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.n0white.n0widgets.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -59,41 +63,52 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
         onDispose { job.cancel() }
     }
 
+    val topShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val bottomShape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
+    val singleShape = RoundedCornerShape(24.dp)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Text(
-            text = "Select Widget to Configure",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                text = stringResource(R.string.main_screen_select_widget_hint),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 8.dp)
+            )
 
-        NavigationCard(
-            title = "Savings Widget",
-            subtitle = "Track your financial goals",
-            icon = Icons.Default.Savings,
-            onClick = onNavigateToSavings,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                NavigationCard(
+                    title = stringResource(R.string.main_screen_savings_widget_title),
+                    subtitle = stringResource(R.string.main_screen_savings_widget_subtitle),
+                    icon = Icons.Default.Savings,
+                    onClick = onNavigateToSavings,
+                    shape = topShape,
+                    iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
 
-        NavigationCard(
-            title = "Counter Widget",
-            subtitle = "Track dates and countdowns",
-            icon = Icons.Default.CalendarToday,
-            onClick = onNavigateToCounter,
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
+                NavigationCard(
+                    title = stringResource(R.string.main_screen_counter_widget_title),
+                    subtitle = stringResource(R.string.main_screen_counter_widget_subtitle),
+                    icon = Icons.Default.CalendarToday,
+                    onClick = onNavigateToCounter,
+                    shape = bottomShape,
+                    iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+        }
 
         if (isBatteryOptimized || !canScheduleExactAlarms) {
-            Spacer(modifier = Modifier.height(8.dp))
-
             Surface(
                 onClick = {
                     if (isBatteryOptimized) {
@@ -113,25 +128,40 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                         context.startActivity(intent)
                     }
                 },
-                shape = MaterialTheme.shapes.large,
+                shape = singleShape,
                 color = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Sync, contentDescription = null)
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.1f), MaterialTheme.shapes.medium),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Sync,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Enable Real-time Updates",
-                            style = MaterialTheme.typography.bodyLarge,
+                            text = stringResource(R.string.main_screen_background_updates_title),
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "To keep widgets updated automatically, please grant background permissions.",
-                            style = MaterialTheme.typography.bodySmall
+                            text = stringResource(R.string.main_screen_background_updates_description),
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -146,47 +176,58 @@ private fun NavigationCard(
     subtitle: String,
     icon: ImageVector,
     onClick: () -> Unit,
-    containerColor: Color,
-    contentColor: Color
+    shape: Shape,
+    iconContainerColor: Color,
+    iconContentColor: Color
 ) {
     Surface(
         onClick = onClick,
-        shape = MaterialTheme.shapes.extraLarge,
-        color = containerColor,
-        contentColor = contentColor,
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 88.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(56.dp)
-                    .background(contentColor.copy(alpha = 0.1f), MaterialTheme.shapes.large),
+                    .size(48.dp)
+                    .background(iconContainerColor, MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = null, modifier = Modifier.size(32.dp))
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconContentColor,
+                    modifier = Modifier.size(24.dp)
+                )
             }
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Icon(Icons.Default.ChevronRight, contentDescription = null)
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

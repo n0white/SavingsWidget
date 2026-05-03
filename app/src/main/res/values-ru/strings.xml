@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">n0widgets</string>
+    <string name="widget_savings_name">Накопления</string>
+    <string name="widget_description">Отслеживайте свои цели накоплений на главном экране.</string>
+    <string name="widget_counter_name">Счетчик</string>
+    <string name="counter_widget_description">Отслеживайте важные даты и обратный отсчет на главном экране.</string>
+
+    <string name="main_screen_select_widget_hint">Выберите виджет для настройки</string>
+    <string name="main_screen_savings_widget_title">Виджет накоплений</string>
+    <string name="main_screen_savings_widget_subtitle">Отслеживайте свои финансовые цели</string>
+    <string name="main_screen_counter_widget_title">Виджет счетчика</string>
+    <string name="main_screen_counter_widget_subtitle">Отслеживайте даты и события</string>
+    <string name="main_screen_background_updates_title">Фоновые обновления</string>
+    <string name="main_screen_background_updates_description">Для автоматического обновления виджетов предоставьте разрешения на фоновое выполнение.</string>
+
+    <string name="default_goal_name">Цель накопления</string>
+    <string name="default_counter_name">Счетчик дней</string>
+
+    <!-- Navigation and General UI -->
+    <string name="back">Назад</string>
+    <string name="reset">Сбросить</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="saved_success">Сохранено!</string>
+
+    <!-- Savings Settings -->
+    <string name="savings_settings_title">Настройки накоплений</string>
+    <string name="set_background_image">Установить фоновое изображение</string>
+    <string name="remove_background">Удалить фон</string>
+    <string name="choose_photo_gallery">Выберите фото из галереи</string>
+    <string name="clear_current_background">Очистить текущий фон</string>
+    <string name="blur_background">Размыть фон</string>
+    <string name="apply_blur_effect">Применить эффект мягкого размытия к изображению</string>
+    <string name="expressive_style">Экспрессивный стиль</string>
+    <string name="use_wavy_shapes">Использовать волнистые формы вместо стандартных линейных</string>
+    <string name="goal_name">Название цели</string>
+    <string name="emoji">Эмодзи</string>
+    <string name="currency">Валюта</string>
+    <string name="target_amount">Целевая сумма</string>
+    <string name="saved_amount">Накопленная сумма</string>
+
+    <!-- Counter Settings -->
+    <string name="counter_settings_title">Настройки счетчика</string>
+    <string name="counter_name">Название счетчика</string>
+    <string name="start_date">Дата начала</string>
+    <string name="target_date">Целевая дата</string>
+    <string name="format_days_only">Формат: только дни</string>
+    <string name="format_ymd">Формат: годы, месяцы, дни</string>
+    <string name="change_time_display">Изменить способ отображения оставшегося времени</string>
+
+    <!-- Widget Content -->
+    <string name="savings_label">Накопления</string>
+    <string name="counter_label">Счетчик</string>
+    <string name="target_label">цель</string>
+    <string name="progress_of">из %1$s%2$s</string>
+    <string name="remaining_label">осталось: </string>
+    <string name="remaining_label_short">ост: </string>
+    <string name="passed_label">уже прошло: </string>
+    <string name="passed_label_short">прошло: </string>
+    <string name="to_target">до %1$s</string>
+    <string name="efficiency_suffix">%1$s в этом месяце</string>
+
+    <!-- Counter Logic / Plurals -->
+    <plurals name="days_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
+    <string name="years_short">%1$d л</string>
+    <string name="months_short">%1$d м</string>
+    <string name="days_short">%1$d д</string>
+
+    <!-- Motivation Phrases -->
+    <string name="motivation_today">Сегодня тот самый день!</string>
+    <string name="motivation_today_compact">Сегодня!</string>
+    <string name="motivation_very_soon">Очень скоро</string>
+    <string name="motivation_soon">Скоро будет</string>
+    <string name="motivation_soon_compact">Скоро</string>
+    <string name="motivation_bit_more">Еще совсем немного</string>
+    <string name="motivation_bit_more_compact">Еще чуть-чуть</string>
+    <string name="motivation_keep_going">Продолжайте в том же духе</string>
+</resources>

@@ -3,6 +3,7 @@ package com.n0white.n0widgets.data
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Counter
 import com.n0white.n0widgets.data.model.CounterFormat
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +42,7 @@ class CounterRepository(val context: Context) {
         val formatMode = try { CounterFormat.valueOf(formatModeStr) } catch (e: Exception) { CounterFormat.DAYS_ONLY }
 
         Counter(
-            name = prefs[KEY_NAME] ?: "Day Counter",
+            name = prefs[KEY_NAME] ?: context.getString(R.string.default_counter_name),
             emoji = prefs[KEY_EMOJI] ?: "📅",
             startDate = startDate,
             targetDate = targetDate,

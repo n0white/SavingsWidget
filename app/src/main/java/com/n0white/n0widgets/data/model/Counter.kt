@@ -1,5 +1,7 @@
 package com.n0white.n0widgets.data.model
 
+import android.content.Context
+import com.n0white.n0widgets.R
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.Period
@@ -31,30 +33,30 @@ data class Counter(
 
     val progress: Float get() = (daysPassed.toFloat() / totalDays.toFloat()).coerceIn(0f, 1f)
 
-    fun getRemainingTimeString(): String {
-        return formatTime(LocalDate.now(), targetDate)
+    fun getRemainingTimeString(context: Context): String {
+        return formatTime(context, LocalDate.now(), targetDate)
     }
 
-    fun getPassedTimeString(): String {
-        val days = ChronoUnit.DAYS.between(startDate, LocalDate.now()).coerceAtLeast(0)
-        return if (days == 1L) "1 day" else "$days days"
+    fun getPassedTimeString(context: Context): String {
+        val days = ChronoUnit.DAYS.between(startDate, LocalDate.now()).coerceAtLeast(0).toInt()
+        return context.resources.getQuantityString(R.plurals.days_count, days, days)
     }
 
-    private fun formatTime(from: LocalDate, to: LocalDate): String {
-        if (from.isAfter(to)) return "0 days"
+    private fun formatTime(context: Context, from: LocalDate, to: LocalDate): String {
+        if (from.isAfter(to)) return context.resources.getQuantityString(R.plurals.days_count, 0, 0)
         
         return when (formatMode) {
             CounterFormat.DAYS_ONLY -> {
-                val days = ChronoUnit.DAYS.between(from, to)
-                if (days == 1L) "1 day" else "$days days"
+                val days = ChronoUnit.DAYS.between(from, to).toInt()
+                context.resources.getQuantityString(R.plurals.days_count, days, days)
             }
             CounterFormat.YMD -> {
                 val period = Period.between(from, to)
                 val parts = mutableListOf<String>()
-                if (period.years > 0) parts.add("${period.years} y")
-                if (period.months > 0) parts.add("${period.months} m")
+                if (period.years > 0) parts.add(context.getString(R.string.years_short, period.years))
+                if (period.months > 0) parts.add(context.getString(R.string.months_short, period.months))
                 if (period.days > 0 || parts.isEmpty()) {
-                    parts.add("${period.days} d")
+                    parts.add(context.getString(R.string.days_short, period.days))
                 }
                 parts.joinToString(", ")
             }
@@ -71,14 +73,14 @@ data class Counter(
         return targetDate.format(DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH))
     }
 
-    fun getMotivationPhrase(isCompact: Boolean = false): String {
+    fun getMotivationPhrase(context: Context, isCompact: Boolean = false): String {
         val days = daysRemaining
         return when {
-            days == 0L -> if (isCompact) "Today!" else "Today is the day!"
-            days <= 3 -> if (isCompact) "Very soon" else "Very soon"
-            days <= 7 -> if (isCompact) "Soon" else "Coming soon"
-            days <= 30 -> if (isCompact) "Bit more" else "Just a little more"
-            else -> if (isCompact) "Keep going" else "Keep going"
+            days == 0L -> context.getString(if (isCompact) R.string.motivation_today_compact else R.string.motivation_today)
+            days <= 3 -> context.getString(R.string.motivation_very_soon)
+            days <= 7 -> context.getString(if (isCompact) R.string.motivation_soon_compact else R.string.motivation_soon)
+            days <= 30 -> context.getString(if (isCompact) R.string.motivation_bit_more_compact else R.string.motivation_bit_more)
+            else -> context.getString(R.string.motivation_keep_going)
         }
     }
 }

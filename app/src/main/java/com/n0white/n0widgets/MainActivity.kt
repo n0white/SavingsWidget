@@ -1,5 +1,6 @@
 package com.n0white.n0widgets
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,12 +11,16 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -61,16 +66,24 @@ fun MainApp(
     intent: Intent?
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     LaunchedEffect(intent) {
-        intent?.getStringExtra("screen")?.let { screen ->
-            when (screen) {
+        val screen = intent?.getStringExtra("screen")
+            ?: when (intent?.action) {
+                "open_savings" -> "savings"
+                "open_counter" -> "counter"
+                else -> null
+            }
+
+        screen?.let { s ->
+            when (s) {
                 "savings" -> navController.navigate("savings") {
-                    popUpTo("main") { inclusive = false }
+                    popUpTo("main") { inclusive = true }
                     launchSingleTop = true
                 }
                 "counter" -> navController.navigate("counter") {
-                    popUpTo("main") { inclusive = false }
+                    popUpTo("main") { inclusive = true }
                     launchSingleTop = true
                 }
             }
@@ -109,7 +122,18 @@ fun MainApp(
     ) {
         composable("main") {
             ScreenScaffold(
-                title = "n0widgets",
+                title = {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("n")
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                                append("0")
+                            }
+                            append("widgets")
+                        },
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 onBack = null,
                 isMain = true
             ) {
@@ -122,8 +146,12 @@ fun MainApp(
         composable("savings") {
             val goal by goalRepository.goalFlow.collectAsState(initial = null)
             ScreenScaffold(
-                title = "Savings Settings",
-                onBack = { navController.popBackStack() },
+                title = { Text(stringResource(R.string.savings_settings_title), fontWeight = FontWeight.Bold) },
+                onBack = { if (navController.previousBackStackEntry != null) {
+                    navController.popBackStack()
+                } else {
+                    (context as? Activity)?.finish()
+                }},
                 isMain = false
             ) {
                 GoalEditScreen(
@@ -135,8 +163,12 @@ fun MainApp(
         composable("counter") {
             val counter by counterRepository.counterFlow.collectAsState(initial = null)
             ScreenScaffold(
-                title = "Counter Settings",
-                onBack = { navController.popBackStack() },
+                title = { Text(stringResource(R.string.counter_settings_title), fontWeight = FontWeight.Bold) },
+                onBack = {if (navController.previousBackStackEntry != null) {
+                    navController.popBackStack()
+                } else {
+                    (context as? Activity)?.finish()
+                }},
                 isMain = false
             ) {
                 CounterEditScreen(
@@ -151,7 +183,7 @@ fun MainApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenScaffold(
-    title: String,
+    title: @Composable () -> Unit,
     onBack: (() -> Unit)?,
     isMain: Boolean,
     content: @Composable () -> Unit
@@ -169,7 +201,7 @@ fun ScreenScaffold(
         topBar = {
             if (isMain) {
                 TopAppBar(
-                    title = { Text(title, fontWeight = FontWeight.Bold) },
+                    title = title,
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -178,14 +210,14 @@ fun ScreenScaffold(
                 )
             } else {
                 LargeTopAppBar(
-                    title = { Text(title, fontWeight = FontWeight.Bold) },
+                    title = title,
                     navigationIcon = {
                         if (onBack != null) {
                             FilledTonalIconButton(
                                 onClick = onBack,
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                             }
                         }
                     },

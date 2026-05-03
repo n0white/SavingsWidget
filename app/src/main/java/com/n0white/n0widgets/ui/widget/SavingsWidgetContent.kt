@@ -31,6 +31,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.n0white.n0widgets.MainActivity
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Goal
 import java.io.File
 import java.text.NumberFormat
@@ -87,6 +88,9 @@ fun SavingsWidgetContent(goal: Goal) {
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java).apply {
+                    action = "open_savings"
+                    data = android.net.Uri.parse("savings://goal/${goal.id}")
+                    putExtra("goal_id", goal.id)
                     putExtra("screen", "savings")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
@@ -130,7 +134,7 @@ fun SavingsWidgetContent(goal: Goal) {
                 ) {
                     Column(modifier = GlanceModifier.defaultWeight()) {
                         Text(
-                            text = "Savings",
+                            text = context.getString(R.string.savings_label),
                             style = TextStyle(
                                 fontSize = if (isHighRes) 11.sp else 10.sp, 
                                 color = onSurfaceVariantColor
@@ -199,7 +203,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "of ${goal.currency}${goal.targetAmount.formatAmount()}",
+                                text = context.getString(R.string.progress_of, goal.currency, goal.targetAmount.formatAmount()),
                                 style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = onSurfaceVariantColor)
                             )
                             
@@ -258,7 +262,7 @@ fun SavingsWidgetContent(goal: Goal) {
                             )
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "target",
+                                    text = context.getString(R.string.target_label),
                                     style = TextStyle(fontSize = if (isHighRes) 10.sp else 9.sp, color = onSurfaceVariantColor)
                                 )
                                 Text(
@@ -297,9 +301,9 @@ fun SavingsWidgetContent(goal: Goal) {
                     )
                     Spacer(modifier = GlanceModifier.defaultWeight())
                     
-                    val footerText = if (isSmall) "left: " else "remaining: "
+                    val footerLabel = if (isSmall) context.getString(R.string.remaining_label_short) else context.getString(R.string.remaining_label)
                     Text(
-                        text = "$footerText${goal.currency}${goal.remaining.formatAmount()}",
+                        text = "$footerLabel${goal.currency}${goal.remaining.formatAmount()}",
                         style = TextStyle(
                             fontSize = if (isHighRes) 12.sp else 10.sp,
                             color = onSurfaceVariantColor
@@ -333,9 +337,11 @@ fun MonthlyEfficiencyChip(
             ),
         contentAlignment = Alignment.Center
     ) {
+        val context = LocalContext.current
         val sign = if (efficiency > 0) "+" else ""
+        val efficiencyText = if (compact) "$sign$efficiency%" else context.getString(R.string.efficiency_suffix, "$sign$efficiency%")
         Text(
-            text = if (compact) "$sign$efficiency%" else "$sign$efficiency% this month",
+            text = efficiencyText,
             style = TextStyle(
                 fontSize = if (compact) 8.sp else (if (isHighRes) 10.sp else 9.sp),
                 fontWeight = FontWeight.Bold,

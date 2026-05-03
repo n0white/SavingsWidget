@@ -4,4 +4,77 @@
     <string name="widget_description">Track your savings goals on your home screen.</string>
     <string name="widget_counter_name">Counter</string>
     <string name="counter_widget_description">Track your important dates and countdowns on your home screen.</string>
+
+    <string name="main_screen_select_widget_hint">Select widget to configure</string>
+    <string name="main_screen_savings_widget_title">Savings Widget</string>
+    <string name="main_screen_savings_widget_subtitle">Track your financial goals</string>
+    <string name="main_screen_counter_widget_title">Counter Widget</string>
+    <string name="main_screen_counter_widget_subtitle">Track dates and events</string>
+    <string name="main_screen_background_updates_title">Background Updates</string>
+    <string name="main_screen_background_updates_description">To update widgets automatically, please grant background execution permissions.</string>
+
+    <string name="default_goal_name">Savings Goal</string>
+    <string name="default_counter_name">Day Counter</string>
+
+    <!-- Navigation and General UI -->
+    <string name="back">Back</string>
+    <string name="reset">Reset</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="saved_success">Saved!</string>
+
+    <!-- Savings Settings -->
+    <string name="savings_settings_title">Savings Settings</string>
+    <string name="set_background_image">Set Background Image</string>
+    <string name="remove_background">Remove Background</string>
+    <string name="choose_photo_gallery">Choose a photo from your gallery</string>
+    <string name="clear_current_background">Clear the current background</string>
+    <string name="blur_background">Blur Background</string>
+    <string name="apply_blur_effect">Apply a soft blur effect to the image</string>
+    <string name="expressive_style">Expressive Style</string>
+    <string name="use_wavy_shapes">Use wavy shapes instead of standard linear ones</string>
+    <string name="goal_name">Goal Name</string>
+    <string name="emoji">Emoji</string>
+    <string name="currency">Currency</string>
+    <string name="target_amount">Target Amount</string>
+    <string name="saved_amount">Saved Amount</string>
+
+    <!-- Counter Settings -->
+    <string name="counter_settings_title">Counter Settings</string>
+    <string name="counter_name">Counter Name</string>
+    <string name="start_date">Start Date</string>
+    <string name="target_date">Target Date</string>
+    <string name="format_days_only">Format: Days Only</string>
+    <string name="format_ymd">Format: Years, Months, Days</string>
+    <string name="change_time_display">Change how the remaining time is displayed</string>
+
+    <!-- Widget Content -->
+    <string name="savings_label">Savings</string>
+    <string name="counter_label">Counter</string>
+    <string name="target_label">target</string>
+    <string name="progress_of">of %1$s%2$s</string>
+    <string name="remaining_label">remaining: </string>
+    <string name="remaining_label_short">left: </string>
+    <string name="passed_label">already passed: </string>
+    <string name="passed_label_short">passed: </string>
+    <string name="to_target">to %1$s</string>
+    <string name="efficiency_suffix">%1$s this month</string>
+
+    <!-- Counter Logic / Plurals -->
+    <plurals name="days_count">
+        <item quantity="one">1 day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="years_short">%1$d y</string>
+    <string name="months_short">%1$d m</string>
+    <string name="days_short">%1$d d</string>
+
+    <!-- Motivation Phrases -->
+    <string name="motivation_today">Today is the day!</string>
+    <string name="motivation_today_compact">Today!</string>
+    <string name="motivation_very_soon">Very soon</string>
+    <string name="motivation_soon">Coming soon</string>
+    <string name="motivation_soon_compact">Soon</string>
+    <string name="motivation_bit_more">Just a little more</string>
+    <string name="motivation_bit_more_compact">Bit more</string>
+    <string name="motivation_keep_going">Keep going</string>
 </resources>
