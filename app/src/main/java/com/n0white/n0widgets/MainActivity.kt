@@ -131,7 +131,10 @@ fun ScreenScaffold(
                                 else -> 0f
                             }
 
-                            Box(modifier = Modifier.graphicsLayer { alpha = titleAlpha }) {
+                            Box(modifier = Modifier
+                                .graphicsLayer { alpha = titleAlpha }
+                                .padding(start = 16.dp)
+                            ) {
                                 val style = if (collapsedFraction > 0.5f) {
                                     MaterialTheme.typography.titleLarge
                                 } else {
@@ -146,7 +149,7 @@ fun ScreenScaffold(
                             if (onBack != null) {
                                 FilledTonalIconButton(
                                     onClick = onBack,
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    modifier = Modifier.padding(start = 23.dp),
                                     colors = IconButtonDefaults.filledTonalIconButtonColors(
                                         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                                     )
