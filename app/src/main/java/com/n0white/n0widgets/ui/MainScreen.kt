@@ -6,8 +6,9 @@ import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.ChevronRight
@@ -22,26 +23,46 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit) {
     val context = LocalContext.current
-    
-    var isBatteryOptimized by remember { 
-        val pm = context.getSystemService(android.content.Context.POWER_SERVICE) as PowerManager
-        mutableStateOf(!pm.isIgnoringBatteryOptimizations(context.packageName)) 
-    }
-    
-    var canScheduleExactAlarms by remember {
-        mutableStateOf(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
-            alarmManager.canScheduleExactAlarms()
-        } else true)
+
+    var isBatteryOptimized by remember { mutableStateOf(false) }
+    var canScheduleExactAlarms by remember { mutableStateOf(true) }
+
+    val coroutineScope = rememberCoroutineScope()
+    DisposableEffect(Unit) {
+        val job = coroutineScope.launch {
+            while (isActive) {
+                val pm = context.getSystemService(android.content.Context.POWER_SERVICE) as PowerManager
+                val currentBatteryOptimized = !pm.isIgnoringBatteryOptimizations(context.packageName)
+                if (isBatteryOptimized != currentBatteryOptimized) {
+                    isBatteryOptimized = currentBatteryOptimized
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val alarmManager =
+                        context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
+                    val currentCanSchedule = alarmManager.canScheduleExactAlarms()
+                    if (canScheduleExactAlarms != currentCanSchedule) {
+                        canScheduleExactAlarms = currentCanSchedule
+                    }
+                }
+
+                delay(5000)
+            }
+        }
+        onDispose { job.cancel() }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,7 +93,7 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
 
         if (isBatteryOptimized || !canScheduleExactAlarms) {
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Surface(
                 onClick = {
                     if (isBatteryOptimized) {
@@ -117,18 +138,6 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
             }
         }
     }
-    
-    LaunchedEffect(Unit) {
-        while(true) {
-            val pm = context.getSystemService(android.content.Context.POWER_SERVICE) as PowerManager
-            isBatteryOptimized = !pm.isIgnoringBatteryOptimizations(context.packageName)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
-                canScheduleExactAlarms = alarmManager.canScheduleExactAlarms()
-            }
-            kotlinx.coroutines.delay(2000)
-        }
-    }
 }
 
 @Composable
@@ -161,9 +170,9 @@ private fun NavigationCard(
             ) {
                 Icon(icon, contentDescription = null, modifier = Modifier.size(32.dp))
             }
-            
+
             Spacer(modifier = Modifier.width(20.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -176,7 +185,7 @@ private fun NavigationCard(
                     color = contentColor.copy(alpha = 0.7f)
                 )
             }
-            
+
             Icon(Icons.Default.ChevronRight, contentDescription = null)
         }
     }

@@ -27,6 +27,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -66,4 +67,5 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
 
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.navigation.compose)
 }
