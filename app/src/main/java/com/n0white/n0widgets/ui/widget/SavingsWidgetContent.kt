@@ -30,7 +30,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.n0white.n0widgets.MainActivity
+import com.n0white.n0widgets.SavingsActivity
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Goal
 import java.io.File
@@ -87,11 +87,7 @@ fun SavingsWidgetContent(goal: Goal) {
                 .fillMaxSize()
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
-                .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java).apply {
-                    action = "open_savings"
-                    data = android.net.Uri.parse("savings://goal/${goal.id}")
-                    putExtra("goal_id", goal.id)
-                    putExtra("screen", "savings")
+                .clickable(actionStartActivity(android.content.Intent(context, SavingsActivity::class.java).apply {
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
         ) {

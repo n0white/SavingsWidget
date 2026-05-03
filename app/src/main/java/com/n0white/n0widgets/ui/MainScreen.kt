@@ -90,7 +90,12 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                     title = stringResource(R.string.main_screen_savings_widget_title),
                     subtitle = stringResource(R.string.main_screen_savings_widget_subtitle),
                     icon = Icons.Default.Savings,
-                    onClick = onNavigateToSavings,
+                    onClick = {
+                        coroutineScope.launch {
+                            delay(150)
+                            onNavigateToSavings()
+                        }
+                    },
                     shape = topShape,
                     iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
                     iconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -100,7 +105,12 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                     title = stringResource(R.string.main_screen_counter_widget_title),
                     subtitle = stringResource(R.string.main_screen_counter_widget_subtitle),
                     icon = Icons.Default.CalendarToday,
-                    onClick = onNavigateToCounter,
+                    onClick = {
+                        coroutineScope.launch {
+                            delay(150)
+                            onNavigateToCounter()
+                        }
+                    },
                     shape = bottomShape,
                     iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer

@@ -19,7 +19,7 @@ import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import com.n0white.n0widgets.MainActivity
+import com.n0white.n0widgets.CounterActivity
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Counter
 import java.io.File
@@ -70,11 +70,7 @@ fun CounterWidgetContent(counter: Counter) {
                 .fillMaxSize()
                 .background(colors.widgetBackground)
                 .cornerRadius(24.dp)
-                .clickable(actionStartActivity(android.content.Intent(context, MainActivity::class.java).apply {
-                    action = "open_counter"
-                    data = android.net.Uri.parse("counter://id/${counter.id}")
-                    putExtra("counter_id", counter.id)
-                    putExtra("screen", "counter")
+                .clickable(actionStartActivity(android.content.Intent(context, CounterActivity::class.java).apply {
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
         ) {

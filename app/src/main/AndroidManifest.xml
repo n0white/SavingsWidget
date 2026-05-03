@@ -19,12 +19,26 @@
             android:name="com.n0white.n0widgets.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.n0white.n0widgets.SavingsActivity"
+            android:exported="true"
+            android:label="@string/savings_settings_title"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.SavingsWidget" />
+
+        <activity
+            android:name="com.n0white.n0widgets.CounterActivity"
+            android:exported="true"
+            android:label="@string/counter_settings_title"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.SavingsWidget" />
 
         <receiver
             android:name="com.n0white.n0widgets.ui.widget.SavingsWidgetReceiver"

@@ -1,13 +1,10 @@
 package com.n0white.n0widgets
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,25 +19,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.data.GoalRepository
-import com.n0white.n0widgets.ui.CounterEditScreen
-import com.n0white.n0widgets.ui.GoalEditScreen
 import com.n0white.n0widgets.ui.MainScreen
 import com.n0white.n0widgets.ui.theme.SavingsWidgetTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var goalRepository: GoalRepository
     private lateinit var counterRepository: CounterRepository
-    private val intentState = mutableStateOf<Intent?>(null)
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        intentState.value = intent
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,134 +35,45 @@ class MainActivity : ComponentActivity() {
         com.n0white.n0widgets.ui.widget.MidnightUpdater.schedule(this)
         enableEdgeToEdge()
 
-        intentState.value = intent
-
         setContent {
             SavingsWidgetTheme {
-                MainApp(goalRepository, counterRepository, intentState.value)
+                MainApp()
             }
         }
     }
 }
 
 @Composable
-fun MainApp(
-    goalRepository: GoalRepository,
-    counterRepository: CounterRepository,
-    intent: Intent?
-) {
-    val navController = rememberNavController()
+fun MainApp() {
     val context = LocalContext.current
-
-    LaunchedEffect(intent) {
-        val screen = intent?.getStringExtra("screen")
-            ?: when (intent?.action) {
-                "open_savings" -> "savings"
-                "open_counter" -> "counter"
-                else -> null
-            }
-
-        screen?.let { s ->
-            when (s) {
-                "savings" -> navController.navigate("savings") {
-                    popUpTo("main") { inclusive = true }
-                    launchSingleTop = true
-                }
-                "counter" -> navController.navigate("counter") {
-                    popUpTo("main") { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
-        }
-    }
-
-    val slideDuration = 300
-
-    NavHost(
-        navController = navController,
-        startDestination = "main",
-        enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                animationSpec = tween(slideDuration)
-            )
-        },
-        exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                animationSpec = tween(slideDuration)
-            )
-        },
-        popEnterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.End,
-                animationSpec = tween(slideDuration)
-            )
-        },
-        popExitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.End,
-                animationSpec = tween(slideDuration)
-            )
-        }
-    ) {
-        composable("main") {
-            ScreenScaffold(
-                title = {
-                    Text(
-                        text = buildAnnotatedString {
-                            append("n")
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
-                                append("0")
-                            }
-                            append("widgets")
-                        },
-                        fontWeight = FontWeight.Bold
-                    )
+    ScreenScaffold(
+        title = {
+            Text(
+                text = buildAnnotatedString {
+                    append("n")
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                        append("0")
+                    }
+                    append("widgets")
                 },
-                onBack = null,
-                isMain = true
-            ) {
-                MainScreen(
-                    onNavigateToSavings = { navController.navigate("savings") },
-                    onNavigateToCounter = { navController.navigate("counter") }
-                )
+                fontWeight = FontWeight.Bold
+            )
+        },
+        onBack = null,
+        isMain = true
+    ) {
+        MainScreen(
+            onNavigateToSavings = {
+                val intent = Intent(context, SavingsActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
+            },
+            onNavigateToCounter = {
+                val intent = Intent(context, CounterActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
             }
-        }
-        composable("savings") {
-            val goal by goalRepository.goalFlow.collectAsState(initial = null)
-            ScreenScaffold(
-                title = { Text(stringResource(R.string.savings_settings_title), fontWeight = FontWeight.Bold) },
-                onBack = { if (navController.previousBackStackEntry != null) {
-                    navController.popBackStack()
-                } else {
-                    (context as? Activity)?.finish()
-                }},
-                isMain = false
-            ) {
-                GoalEditScreen(
-                    repository = goalRepository,
-                    goal = goal
-                )
-            }
-        }
-        composable("counter") {
-            val counter by counterRepository.counterFlow.collectAsState(initial = null)
-            ScreenScaffold(
-                title = { Text(stringResource(R.string.counter_settings_title), fontWeight = FontWeight.Bold) },
-                onBack = {if (navController.previousBackStackEntry != null) {
-                    navController.popBackStack()
-                } else {
-                    (context as? Activity)?.finish()
-                }},
-                isMain = false
-            ) {
-                CounterEditScreen(
-                    repository = counterRepository,
-                    counter = counter
-                )
-            }
-        }
+        )
     }
 }
 
@@ -217,7 +114,11 @@ fun ScreenScaffold(
                                 onClick = onBack,
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                                // Explicit import-less icon usage if needed, but we have the import
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back)
+                                )
                             }
                         }
                     },
