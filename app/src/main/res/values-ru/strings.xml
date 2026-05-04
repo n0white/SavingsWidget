@@ -34,6 +34,8 @@
     <string name="clear_current_background">Очистить текущий фон</string>
     <string name="blur_background">Размыть фон</string>
     <string name="apply_blur_effect">Применить эффект мягкого размытия к изображению</string>
+    <string name="add_button_mode">Кнопка добавления</string>
+    <string name="replace_emoji_with_plus">Заменить эмодзи на кнопку быстрого добавления суммы</string>
     <string name="expressive_style">Экспрессивный стиль</string>
     <string name="use_wavy_shapes">Использовать волнистые формы вместо стандартных линейных</string>
     <string name="goal_name">Название цели</string>
@@ -41,6 +43,8 @@
     <string name="currency">Валюта</string>
     <string name="target_amount">Целевая сумма</string>
     <string name="saved_amount">Накопленная сумма</string>
+    <string name="add_amount_title">Добавить сумму</string>
+    <string name="amount_to_add">Сумма для добавления</string>
 
     <!-- Counter Settings -->
     <string name="counter_settings_title">Настройки счетчика</string>

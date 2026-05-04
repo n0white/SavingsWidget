@@ -448,7 +448,16 @@ fun CounterEditScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = emoji,
-                                onValueChange = { emoji = it },
+                                onValueChange = { input ->
+                                    // Filter only emojis
+                                    val filtered = input.filter { char ->
+                                        Character.getType(char).toByte() == Character.SURROGATE ||
+                                        Character.getType(char).toByte() == Character.OTHER_SYMBOL ||
+                                        char.code in 0x2000..0x32FF ||
+                                        char.code in 0x1F000..0x1F9FF
+                                    }
+                                    if (filtered.length <= 2) emoji = filtered
+                                },
                                 label = { Text(stringResource(R.string.emoji)) },
                                 leadingIcon = { Icon(Icons.Outlined.EmojiEmotions, null) },
                                 modifier = Modifier.weight(1f),

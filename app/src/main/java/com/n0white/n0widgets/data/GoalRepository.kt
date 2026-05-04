@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.n0white.n0widgets.data.model.Goal
+import com.n0white.n0widgets.ui.widget.SavingsWidget
+import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.delay
 import java.util.Calendar
 
 private val Context.goalDataStore by preferencesDataStore(name = "settings_savings")
@@ -24,6 +27,7 @@ class GoalRepository(val context: Context) {
         val KEY_LAST_UPDATE_MONTH = intPreferencesKey("goal_last_update_month")
         val KEY_BG_IMAGE = stringPreferencesKey("goal_bg_image_path")
         val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("goal_is_blur_enabled")
+        val KEY_IS_PLUS_BUTTON_ENABLED = booleanPreferencesKey("goal_is_plus_button_enabled")
         val KEY_COLOR_PRIMARY = intPreferencesKey("goal_color_primary")
         val KEY_COLOR_ON_SURFACE = intPreferencesKey("goal_color_on_surface")
         val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("goal_color_secondary_container")
@@ -52,6 +56,7 @@ class GoalRepository(val context: Context) {
             lastUpdateMonth = if (currentMonth != storedMonth && storedMonth != -1) currentMonth else storedMonth,
             backgroundImagePath = prefs[KEY_BG_IMAGE],
             isBlurEnabled = prefs[KEY_IS_BLUR_ENABLED] ?: false,
+            isPlusButtonEnabled = prefs[KEY_IS_PLUS_BUTTON_ENABLED] ?: false,
             customPrimary = prefs[KEY_COLOR_PRIMARY],
             customOnSurface = prefs[KEY_COLOR_ON_SURFACE],
             customSecondaryContainer = prefs[KEY_COLOR_SECONDARY_CONTAINER]
@@ -79,6 +84,7 @@ class GoalRepository(val context: Context) {
             prefs[KEY_IS_WAVY] = goal.isWavy
             prefs[KEY_BG_IMAGE] = goal.backgroundImagePath ?: ""
             prefs[KEY_IS_BLUR_ENABLED] = goal.isBlurEnabled
+            prefs[KEY_IS_PLUS_BUTTON_ENABLED] = goal.isPlusButtonEnabled
             
             goal.customPrimary?.let { prefs[KEY_COLOR_PRIMARY] = it } ?: prefs.remove(KEY_COLOR_PRIMARY)
             goal.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)
@@ -92,5 +98,9 @@ class GoalRepository(val context: Context) {
                 prefs[KEY_MONTH_START_AMOUNT] = goal.savedAmount
             }
         }
+        
+        // Ensure the data is persisted and trigger update
+        delay(100)
+        SavingsWidget().updateAll(context.applicationContext)
     }
 }
