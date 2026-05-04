@@ -6,11 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
-import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.state.GlanceStateDefinition
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.GoalRepository
 import com.n0white.n0widgets.data.model.Goal
+import kotlinx.coroutines.flow.first
 
 class SavingsWidget : GlanceAppWidget() {
 
@@ -23,11 +25,10 @@ class SavingsWidget : GlanceAppWidget() {
         provideContent {
             val goal by repo.goalFlow.collectAsState(
                 initial = Goal(
-                    name = "Loading...",
-                    emoji = "⏳",
+                    name = context.getString(R.string.default_goal_name),
+                    emoji = "💰",
                     savedAmount = 0.0,
-                    targetAmount = 1.0,
-                    currency = "$"
+                    targetAmount = 0.0
                 )
             )
             SavingsWidgetContent(goal = goal)

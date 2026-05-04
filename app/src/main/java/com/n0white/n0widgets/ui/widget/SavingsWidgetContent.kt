@@ -30,7 +30,9 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import android.content.Intent
 import com.n0white.n0widgets.SavingsActivity
+import com.n0white.n0widgets.AddAmountActivity
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Goal
 import java.io.File
@@ -168,7 +170,26 @@ fun SavingsWidgetContent(goal: Goal) {
                     
                     Spacer(modifier = GlanceModifier.width(12.dp))
 
-                    if (goal.emoji.isNotEmpty()) {
+                    if (goal.isPlusButtonEnabled) {
+                        Box(
+                            modifier = GlanceModifier
+                                .size(if (isHighRes) 48.dp else 44.dp)
+                                .background(tertiaryContainerColor)
+                                .cornerRadius(if (isHighRes) 14.dp else 12.dp)
+                                .clickable(actionStartActivity(Intent(context, AddAmountActivity::class.java).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    // Use sourceBounds for the animation (standard Android behavior when actionStartActivity is used from widget)
+                                })),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                provider = ImageProvider(R.drawable.ic_add),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(onTertiaryContainerColor),
+                                modifier = GlanceModifier.size(if (isHighRes) 24.dp else 22.dp)
+                            )
+                        }
+                    } else if (goal.emoji.isNotEmpty()) {
                         Box(
                             modifier = GlanceModifier
                                 .size(if (isHighRes) 48.dp else 44.dp)

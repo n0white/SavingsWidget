@@ -61,6 +61,7 @@ fun GoalEditScreen(
     var savedAmount by remember { mutableStateOf("") }
     var currency by remember { mutableStateOf("$") }
     var isWavy by remember { mutableStateOf(true) }
+    var isPlusButtonEnabled by remember { mutableStateOf(false) }
     var isBlurEnabled by remember { mutableStateOf(false) }
     var backgroundImagePath by remember { mutableStateOf<String?>(null) }
 
@@ -68,16 +69,18 @@ fun GoalEditScreen(
         if (!initialized && goal != null) {
             name = goal.name
             emoji = goal.emoji
-            targetAmount = goal.targetAmount.toString()
-            savedAmount = goal.savedAmount.toString()
+            targetAmount = goal.targetAmount.toInt().toString()
+            savedAmount = goal.savedAmount.toInt().toString()
             currency = goal.currency
             isWavy = goal.isWavy
+            isPlusButtonEnabled = goal.isPlusButtonEnabled
             isBlurEnabled = goal.isBlurEnabled
             backgroundImagePath = goal.backgroundImagePath
             initialized = true
         }
         if (initialized && goal != null) {
             backgroundImagePath = goal.backgroundImagePath
+            savedAmount = goal.savedAmount.toInt().toString()
             if (backgroundImagePath.isNullOrEmpty()) isBlurEnabled = false
         }
     }
@@ -114,7 +117,6 @@ fun GoalEditScreen(
                             customSecondaryContainer = palette.getDarkMutedColor(0)
                         )
                     )
-                    SavingsWidget().updateAll(context)
                 }
             }
         }
@@ -179,7 +181,6 @@ fun GoalEditScreen(
                                             customSecondaryContainer = null
                                         )
                                     )
-                                    SavingsWidget().updateAll(context)
                                 }
                             }
                         },
@@ -288,7 +289,7 @@ fun GoalEditScreen(
                             view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                             isWavy = !isWavy 
                         },
-                        shape = bottomShape,
+                        shape = middleShape,
                         color = MaterialTheme.colorScheme.surfaceBright,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -302,7 +303,7 @@ fun GoalEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    if (isWavy) Icons.Outlined.Waves else Icons.Outlined.LinearScale,
+                                    Icons.Outlined.Waves,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -331,6 +332,68 @@ fun GoalEditScreen(
                                     .scale(if (isHighRes) 1.1f else 1.0f)
                                     .padding(start = 12.dp),
                                 thumbContent = if (isWavy) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    Surface(
+                        onClick = { 
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                            isPlusButtonEnabled = !isPlusButtonEnabled 
+                        },
+                        shape = bottomShape,
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 80.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                Icon(
+                                    Icons.Outlined.AddCircleOutline,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.add_button_mode),
+                                        style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.replace_emoji_with_plus),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = isPlusButtonEnabled,
+                                onCheckedChange = { 
+                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                    isPlusButtonEnabled = it 
+                                },
+                                modifier = Modifier
+                                    .scale(if (isHighRes) 1.1f else 1.0f)
+                                    .padding(start = 12.dp),
+                                thumbContent = if (isPlusButtonEnabled) {
                                     {
                                         Icon(
                                             imageVector = Icons.Outlined.Check,
@@ -377,13 +440,25 @@ fun GoalEditScreen(
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
-                                value = emoji,
-                                onValueChange = { emoji = it },
+                                value = if (isPlusButtonEnabled) "+" else emoji,
+                                onValueChange = { input ->
+                                    if (!isPlusButtonEnabled) {
+                                        // Filter only emojis
+                                        val filtered = input.filter { char ->
+                                            Character.getType(char).toByte() == Character.SURROGATE ||
+                                            Character.getType(char).toByte() == Character.OTHER_SYMBOL ||
+                                            char.code in 0x2000..0x32FF ||
+                                            char.code in 0x1F000..0x1F9FF
+                                        }
+                                        if (filtered.length <= 2) emoji = filtered
+                                    }
+                                },
                                 label = { Text(stringResource(R.string.emoji)) },
                                 leadingIcon = { Icon(Icons.Outlined.EmojiEmotions, null) },
                                 modifier = Modifier.weight(1f),
                                 shape = MaterialTheme.shapes.medium,
-                                singleLine = true
+                                singleLine = true,
+                                enabled = !isPlusButtonEnabled
                             )
 
                             OutlinedTextField(
@@ -399,10 +474,12 @@ fun GoalEditScreen(
 
                         OutlinedTextField(
                             value = targetAmount,
-                            onValueChange = { targetAmount = it },
+                            onValueChange = { input ->
+                                if (input.all { it.isDigit() }) targetAmount = input
+                            },
                             label = { Text(stringResource(R.string.target_amount)) },
                             leadingIcon = { Icon(Icons.Outlined.TrackChanges, null) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                             singleLine = true
@@ -410,10 +487,12 @@ fun GoalEditScreen(
 
                         OutlinedTextField(
                             value = savedAmount,
-                            onValueChange = { savedAmount = it },
+                            onValueChange = { input ->
+                                if (input.all { it.isDigit() }) savedAmount = input
+                            },
                             label = { Text(stringResource(R.string.saved_amount)) },
                             leadingIcon = { Icon(Icons.Outlined.AddCard, null) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                             singleLine = true
@@ -447,6 +526,7 @@ fun GoalEditScreen(
                             savedAmount = "0"
                             currency = "$"
                             isWavy = false
+                            isPlusButtonEnabled = false
                             isBlurEnabled = false
                             backgroundImagePath = null
 
@@ -457,6 +537,7 @@ fun GoalEditScreen(
                                 savedAmount = 0.0,
                                 currency = "$",
                                 isWavy = false,
+                                isPlusButtonEnabled = false,
                                 isBlurEnabled = false,
                                 backgroundImagePath = null,
                                 customPrimary = null,
@@ -464,7 +545,6 @@ fun GoalEditScreen(
                                 customSecondaryContainer = null
                             )
                             repository.updateGoal(updatedGoal)
-                            SavingsWidget().updateAll(context)
                         }
                     },
                     modifier = Modifier
@@ -488,11 +568,12 @@ fun GoalEditScreen(
                             savedAmount = savedAmount.toDoubleOrNull() ?: 0.0,
                             currency = currency,
                             isWavy = isWavy,
+                            isPlusButtonEnabled = isPlusButtonEnabled,
                             isBlurEnabled = isBlurEnabled
                         )
                         scope.launch {
                             repository.updateGoal(updatedGoal)
-                            SavingsWidget().updateAll(context)
+                            
                             isSaved = true
                             delay(2000)
                             isSaved = false

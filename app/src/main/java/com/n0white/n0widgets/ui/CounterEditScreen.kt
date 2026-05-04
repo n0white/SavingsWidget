@@ -122,7 +122,6 @@ fun CounterEditScreen(
                             customSecondaryContainer = palette.getDarkMutedColor(0)
                         )
                     )
-                    CounterWidget().updateAll(context)
                 }
             }
         }
@@ -187,7 +186,6 @@ fun CounterEditScreen(
                                             customSecondaryContainer = null
                                         )
                                     )
-                                    CounterWidget().updateAll(context)
                                 }
                             }
                         },
@@ -310,7 +308,7 @@ fun CounterEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    if (isWavy) Icons.Outlined.Waves else Icons.Outlined.LinearScale,
+                                    Icons.Outlined.Waves,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -448,7 +446,16 @@ fun CounterEditScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = emoji,
-                                onValueChange = { emoji = it },
+                                onValueChange = { input ->
+                                    // Filter only emojis
+                                    val filtered = input.filter { char ->
+                                        Character.getType(char).toByte() == Character.SURROGATE ||
+                                        Character.getType(char).toByte() == Character.OTHER_SYMBOL ||
+                                        char.code in 0x2000..0x32FF ||
+                                        char.code in 0x1F000..0x1F9FF
+                                    }
+                                    if (filtered.length <= 2) emoji = filtered
+                                },
                                 label = { Text(stringResource(R.string.emoji)) },
                                 leadingIcon = { Icon(Icons.Outlined.EmojiEmotions, null) },
                                 modifier = Modifier.weight(1f),
@@ -547,7 +554,6 @@ fun CounterEditScreen(
                                 customSecondaryContainer = null
                             )
                             repository.updateCounter(updatedCounter)
-                            CounterWidget().updateAll(context)
                         }
                     },
                     modifier = Modifier
@@ -575,7 +581,6 @@ fun CounterEditScreen(
                         )
                         scope.launch {
                             repository.updateCounter(updatedCounter)
-                            CounterWidget().updateAll(context)
                             com.n0white.n0widgets.ui.widget.MidnightUpdater.schedule(context)
                             isSaved = true
                             delay(2000)

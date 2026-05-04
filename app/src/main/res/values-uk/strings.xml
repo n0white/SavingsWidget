@@ -21,6 +21,7 @@
     <string name="reset">Скинути</string>
     <string name="save_changes">Зберегти зміни</string>
     <string name="saved_success">Збережено!</string>
+    <string name="add">Додати</string>
 
     <!-- Categories -->
     <string name="settings_category_appearance">Вигляд</string>
@@ -34,6 +35,8 @@
     <string name="clear_current_background">Очистити поточний фон</string>
     <string name="blur_background">Розмити фон</string>
     <string name="apply_blur_effect">Застосувати ефект м\'якого розмиття до зображення</string>
+    <string name="add_button_mode">Кнопка додавання</string>
+    <string name="replace_emoji_with_plus">Замінити емодзі на кнопку швидкого додавання суми</string>
     <string name="expressive_style">Експресивний стиль</string>
     <string name="use_wavy_shapes">Використовувати хвилясті форми замість стандартних лінійних</string>
     <string name="goal_name">Назва цілі</string>
@@ -41,6 +44,8 @@
     <string name="currency">Валюта</string>
     <string name="target_amount">Цільова сума</string>
     <string name="saved_amount">Заощаджена сума</string>
+    <string name="add_amount_title">Додати суму</string>
+    <string name="amount_to_add">Сума для додавання</string>
 
     <!-- Counter Settings -->
     <string name="counter_settings_title">Налаштування лічильника</string>
