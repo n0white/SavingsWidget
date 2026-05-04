@@ -21,6 +21,18 @@
 #-renamesourcefileattribute SourceFile
 
 
+# Glance Widgets
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }
+
+# Prevent class merging for widgets as they are distinguished by class type
+-keepnames class * extends androidx.glance.appwidget.GlanceAppWidget
+-keepnames class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver
+
+# Keep DataStore and Repository models
+-keep class com.n0white.n0widgets.data.model.** { *; }
+-keep class com.n0white.n0widgets.data.** { *; }
+
 -keep class androidx.work.impl.** { *; }
 -keep class * extends androidx.room.RoomDatabase
 -keep class androidx.room.Room

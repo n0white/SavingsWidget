@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-private val Context.counterDataStore by preferencesDataStore(name = "counter")
+private val Context.counterDataStore by preferencesDataStore(name = "settings_counter")
 
 class CounterRepository(val context: Context) {
 
@@ -21,11 +21,11 @@ class CounterRepository(val context: Context) {
         val KEY_TARGET_DATE = stringPreferencesKey("counter_target_date")
         val KEY_FORMAT_MODE = stringPreferencesKey("counter_format_mode")
         val KEY_IS_WAVY = booleanPreferencesKey("counter_is_wavy")
-        val KEY_BG_IMAGE = stringPreferencesKey("bg_image_path")
-        val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("is_blur_enabled")
-        val KEY_COLOR_PRIMARY = intPreferencesKey("color_primary")
-        val KEY_COLOR_ON_SURFACE = intPreferencesKey("color_on_surface")
-        val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("color_secondary_container")
+        val KEY_BG_IMAGE = stringPreferencesKey("counter_bg_image_path")
+        val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("counter_is_blur_enabled")
+        val KEY_COLOR_PRIMARY = intPreferencesKey("counter_color_primary")
+        val KEY_COLOR_ON_SURFACE = intPreferencesKey("counter_color_on_surface")
+        val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("counter_color_secondary_container")
         
         private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     }

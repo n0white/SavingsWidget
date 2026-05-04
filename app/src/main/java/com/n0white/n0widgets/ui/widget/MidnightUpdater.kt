@@ -8,13 +8,13 @@ import android.os.Build
 import java.util.Calendar
 
 object MidnightUpdater {
-    const val ACTION_REFRESH_WIDGET = "com.n0white.n0widgets.ACTION_REFRESH_WIDGET"
+    const val ACTION_REFRESH_COUNTER = "com.n0white.n0widgets.ACTION_REFRESH_COUNTER"
 
     fun schedule(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         
         val intent = Intent(context, CounterWidgetReceiver::class.java).apply {
-            action = ACTION_REFRESH_WIDGET
+            action = ACTION_REFRESH_COUNTER
         }
         
         val pendingIntent = PendingIntent.getBroadcast(

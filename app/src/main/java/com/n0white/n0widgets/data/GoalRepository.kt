@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.Calendar
 
-private val Context.dataStore by preferencesDataStore(name = "savings")
+private val Context.goalDataStore by preferencesDataStore(name = "settings_savings")
 
 class GoalRepository(val context: Context) {
 
@@ -20,16 +20,16 @@ class GoalRepository(val context: Context) {
         val KEY_TARGET = doublePreferencesKey("goal_target")
         val KEY_CURRENCY = stringPreferencesKey("goal_currency")
         val KEY_IS_WAVY = booleanPreferencesKey("goal_is_wavy")
-        val KEY_MONTH_START_AMOUNT = doublePreferencesKey("month_start_amount")
-        val KEY_LAST_UPDATE_MONTH = intPreferencesKey("last_update_month")
-        val KEY_BG_IMAGE = stringPreferencesKey("bg_image_path")
-        val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("is_blur_enabled")
-        val KEY_COLOR_PRIMARY = intPreferencesKey("color_primary")
-        val KEY_COLOR_ON_SURFACE = intPreferencesKey("color_on_surface")
-        val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("color_secondary_container")
+        val KEY_MONTH_START_AMOUNT = doublePreferencesKey("goal_month_start_amount")
+        val KEY_LAST_UPDATE_MONTH = intPreferencesKey("goal_last_update_month")
+        val KEY_BG_IMAGE = stringPreferencesKey("goal_bg_image_path")
+        val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("goal_is_blur_enabled")
+        val KEY_COLOR_PRIMARY = intPreferencesKey("goal_color_primary")
+        val KEY_COLOR_ON_SURFACE = intPreferencesKey("goal_color_on_surface")
+        val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("goal_color_secondary_container")
     }
 
-    val goalFlow: Flow<Goal> = context.dataStore.data.map { prefs ->
+    val goalFlow: Flow<Goal> = context.goalDataStore.data.map { prefs ->
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
         val storedMonth = prefs[KEY_LAST_UPDATE_MONTH] ?: -1
         val savedAmount = prefs[KEY_SAVED] ?: 0.0
@@ -59,18 +59,18 @@ class GoalRepository(val context: Context) {
     }
 
     suspend fun resetGoal() {
-        context.dataStore.edit { prefs ->
+        context.goalDataStore.edit { prefs ->
             prefs.clear()
         }
     }
 
     suspend fun updateGoal(goal: Goal) {
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
-        val currentPrefs = context.dataStore.data.first()
+        val currentPrefs = context.goalDataStore.data.first()
         val storedMonth = currentPrefs[KEY_LAST_UPDATE_MONTH] ?: -1
         val storedSavedAmount = currentPrefs[KEY_SAVED] ?: 0.0
 
-        context.dataStore.edit { prefs ->
+        context.goalDataStore.edit { prefs ->
             prefs[KEY_NAME] = goal.name
             prefs[KEY_EMOJI] = goal.emoji
             prefs[KEY_SAVED] = goal.savedAmount

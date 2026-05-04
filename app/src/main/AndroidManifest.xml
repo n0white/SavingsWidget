@@ -59,7 +59,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.n0white.n0widgets.ACTION_REFRESH_WIDGET" />
+                <action android:name="com.n0white.n0widgets.ACTION_REFRESH_COUNTER" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

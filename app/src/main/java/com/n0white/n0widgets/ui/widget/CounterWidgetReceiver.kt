@@ -17,7 +17,7 @@ class CounterWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
         val action = intent.action
         
-        if (action == MidnightUpdater.ACTION_REFRESH_WIDGET) {
+        if (action == MidnightUpdater.ACTION_REFRESH_COUNTER) {
             val pendingResult = goAsync()
             scope.launch {
                 try {

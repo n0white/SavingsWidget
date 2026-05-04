@@ -8,13 +8,14 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.appwidget.SizeMode
+import androidx.glance.state.GlanceStateDefinition
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.data.model.Counter
 import java.time.LocalDate
 
 class CounterWidget : GlanceAppWidget() {
 
-    override val stateDefinition = PreferencesGlanceStateDefinition
+    override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
