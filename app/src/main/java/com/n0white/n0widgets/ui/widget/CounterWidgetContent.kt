@@ -124,9 +124,10 @@ fun CounterWidgetContent(counter: Counter) {
                         
                         val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
                         
+                        val displayName = counter.name.ifBlank { context.getString(R.string.default_counter_name) }
                         val finalFontSize = if (!isSmall) {
                             getDynamicFontSize(
-                                text = counter.name,
+                                text = displayName,
                                 maxWidth = availableWidthDp,
                                 baseSize = baseFontSize,
                                 reducedSize = reducedFontSize,
@@ -137,7 +138,7 @@ fun CounterWidgetContent(counter: Counter) {
                         }
 
                         Text(
-                            text = counter.name,
+                            text = displayName,
                             style = TextStyle(
                                 fontSize = finalFontSize,
                                 fontWeight = FontWeight.Medium,

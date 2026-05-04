@@ -24,7 +24,7 @@ class CounterWidget : GlanceAppWidget() {
             val counter by repo.counterFlow.collectAsState(
                 initial = Counter(
                     name = "Loading...",
-                    emoji = "⏳",
+                    emoji = "📅",
                     startDate = LocalDate.now(),
                     targetDate = LocalDate.now().plusDays(1)
                 )

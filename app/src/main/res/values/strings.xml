@@ -13,8 +13,8 @@
     <string name="main_screen_background_updates_title">Background Updates</string>
     <string name="main_screen_background_updates_description">To update widgets automatically, please grant background execution permissions.</string>
 
-    <string name="default_goal_name">Savings Goal</string>
-    <string name="default_counter_name">Day Counter</string>
+    <string name="default_goal_name">Saving Goal</string>
+    <string name="default_counter_name">Important Day</string>
 
     <!-- Navigation and General UI -->
     <string name="back">Back</string>

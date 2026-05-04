@@ -14,7 +14,7 @@
     <string name="main_screen_background_updates_description">Для автоматичного оновлення віджетів надайте дозволи на фонове виконання.</string>
 
     <string name="default_goal_name">Ціль заощадження</string>
-    <string name="default_counter_name">Лічильник днів</string>
+    <string name="default_counter_name">Важливий день</string>
 
     <!-- Navigation and General UI -->
     <string name="back">Назад</string>

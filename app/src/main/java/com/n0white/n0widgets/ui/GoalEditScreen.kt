@@ -441,7 +441,29 @@ fun GoalEditScreen(
                     onClick = {
                         view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                         scope.launch {
-                            repository.resetGoal()
+                            name = ""
+                            emoji = "💰"
+                            targetAmount = "0"
+                            savedAmount = "0"
+                            currency = "$"
+                            isWavy = false
+                            isBlurEnabled = false
+                            backgroundImagePath = null
+
+                            val updatedGoal = (goal ?: Goal(name = "", emoji = "💰", savedAmount = 0.0, targetAmount = 0.0)).copy(
+                                name = "",
+                                emoji = "💰",
+                                targetAmount = 0.0,
+                                savedAmount = 0.0,
+                                currency = "$",
+                                isWavy = false,
+                                isBlurEnabled = false,
+                                backgroundImagePath = null,
+                                customPrimary = null,
+                                customOnSurface = null,
+                                customSecondaryContainer = null
+                            )
+                            repository.updateGoal(updatedGoal)
                             SavingsWidget().updateAll(context)
                         }
                     },

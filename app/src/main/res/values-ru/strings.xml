@@ -14,7 +14,7 @@
     <string name="main_screen_background_updates_description">Для автоматического обновления виджетов предоставьте разрешения на фоновое выполнение.</string>
 
     <string name="default_goal_name">Цель накопления</string>
-    <string name="default_counter_name">Счетчик дней</string>
+    <string name="default_counter_name">Важный день</string>
 
     <!-- Navigation and General UI -->
     <string name="back">Назад</string>

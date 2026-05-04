@@ -519,7 +519,34 @@ fun CounterEditScreen(
                     onClick = {
                         view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                         scope.launch {
-                            repository.resetCounter()
+                            name = ""
+                            emoji = "📅"
+                            startDate = LocalDate.now()
+                            targetDate = LocalDate.now().plusMonths(1)
+                            isWavy = false
+                            isBlurEnabled = false
+                            backgroundImagePath = null
+                            formatMode = CounterFormat.DAYS_ONLY
+
+                            val updatedCounter = (counter ?: Counter(
+                                name = "",
+                                emoji = "📅",
+                                startDate = LocalDate.now(),
+                                targetDate = LocalDate.now().plusMonths(1)
+                            )).copy(
+                                name = "",
+                                emoji = "📅",
+                                startDate = LocalDate.now(),
+                                targetDate = LocalDate.now().plusMonths(1),
+                                isWavy = false,
+                                isBlurEnabled = false,
+                                backgroundImagePath = null,
+                                formatMode = CounterFormat.DAYS_ONLY,
+                                customPrimary = null,
+                                customOnSurface = null,
+                                customSecondaryContainer = null
+                            )
+                            repository.updateCounter(updatedCounter)
                             CounterWidget().updateAll(context)
                         }
                     },

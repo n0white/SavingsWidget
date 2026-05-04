@@ -3,7 +3,6 @@ package com.n0white.n0widgets.data
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
-import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -43,12 +42,12 @@ class GoalRepository(val context: Context) {
         }
 
         Goal(
-            name = prefs[KEY_NAME] ?: context.getString(R.string.default_goal_name),
+            name = prefs[KEY_NAME] ?: "",
             emoji = prefs[KEY_EMOJI] ?: "💰",
             savedAmount = savedAmount,
-            targetAmount = prefs[KEY_TARGET] ?: 1000.0,
+            targetAmount = prefs[KEY_TARGET] ?: 0.0,
             currency = prefs[KEY_CURRENCY] ?: "$",
-            isWavy = prefs[KEY_IS_WAVY] ?: true,
+            isWavy = prefs[KEY_IS_WAVY] ?: false,
             startOfMonthAmount = effectiveStartAmount,
             lastUpdateMonth = if (currentMonth != storedMonth && storedMonth != -1) currentMonth else storedMonth,
             backgroundImagePath = prefs[KEY_BG_IMAGE],

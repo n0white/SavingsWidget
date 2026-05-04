@@ -142,9 +142,10 @@ fun SavingsWidgetContent(goal: Goal) {
                         
                         val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
                         
+                        val displayName = goal.name.ifBlank { context.getString(R.string.default_goal_name) }
                         val finalFontSize = if (!isSmall) {
                             getDynamicFontSize(
-                                text = goal.name,
+                                text = displayName,
                                 maxWidth = availableWidthDp,
                                 baseSize = baseFontSize,
                                 reducedSize = reducedFontSize,
@@ -155,7 +156,7 @@ fun SavingsWidgetContent(goal: Goal) {
                         }
 
                         Text(
-                            text = goal.name,
+                            text = displayName,
                             style = TextStyle(
                                 fontSize = finalFontSize,
                                 fontWeight = FontWeight.Medium,
