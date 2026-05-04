@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.ui.CounterEditScreen
 import com.n0white.n0widgets.ui.theme.SavingsWidgetTheme
@@ -26,7 +27,14 @@ class CounterActivity : ComponentActivity() {
                 val counter by counterRepository.counterFlow.collectAsState(initial = null)
 
                 ScreenScaffold(
-                    title = { Text(stringResource(R.string.counter_settings_title), fontWeight = FontWeight.Medium) },
+                    title = {
+                        Text(
+                            text = stringResource(R.string.counter_settings_title),
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 2,
+                            lineHeight = 26.sp
+                        )
+                    },
                     onBack = { finish() },
                     isMain = false
                 ) {

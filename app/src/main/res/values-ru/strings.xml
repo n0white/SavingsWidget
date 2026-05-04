@@ -49,6 +49,9 @@
 
     <!-- Counter Settings -->
     <string name="counter_settings_title">Настройки счетчика</string>
+    <string name="infinite_counter">Бесконечный счетчик</string>
+    <string name="infinite_counter_description">Отслеживайте время без фиксированной конечной даты</string>
+    <string name="infinite_for_prefix">уже %1$s</string>
     <string name="counter_name">Название счетчика</string>
     <string name="start_date">Дата начала</string>
     <string name="target_date">Целевая дата</string>
@@ -60,9 +63,11 @@
     <string name="savings_label">Накопления</string>
     <string name="counter_label">Счетчик</string>
     <string name="target_label">цель</string>
+    <string name="target_milestone">цель %1$s</string>
     <string name="progress_of">из %1$s%2$s</string>
     <string name="remaining_label">"осталось "</string>
     <string name="remaining_label_short">"еще "</string>
+    <string name="remaining_milestone_label">"еще "</string>
     <string name="passed_label">"уже прошло "</string>
     <string name="passed_label_short">"прошло "</string>
     <string name="to_target">до %1$s</string>
@@ -75,7 +80,32 @@
         <item quantity="many">%1$d дней</item>
         <item quantity="other">%1$d дней</item>
     </plurals>
-    <string name="years_short">%1$d л</string>
+    <plurals name="weeks_count">
+        <item quantity="one">%1$d неделя</item>
+        <item quantity="few">%1$d недели</item>
+        <item quantity="many">%1$d недель</item>
+        <item quantity="other">%1$d недель</item>
+    </plurals>
+    <plurals name="months_count">
+        <item quantity="one">%1$d месяц</item>
+        <item quantity="few">%1$d месяца</item>
+        <item quantity="many">%1$d месяцев</item>
+        <item quantity="other">%1$d месяцев</item>
+    </plurals>
+    <plurals name="years_count">
+        <item quantity="one">%1$d год</item>
+        <item quantity="few">%1$d года</item>
+        <item quantity="many">%1$d лет</item>
+        <item quantity="other">%1$d лет</item>
+    </plurals>
+    <plurals name="years_full">
+        <item quantity="one">%1$d год</item>
+        <item quantity="few">%1$d года</item>
+        <item quantity="many">%1$d лет</item>
+        <item quantity="other">%1$d лет</item>
+    </plurals>
+    <string name="years_short_one">%1$d г</string>
+    <string name="years_short_other">%1$d л</string>
     <string name="months_short">%1$d м</string>
     <string name="days_short">%1$d д</string>
 
@@ -89,4 +119,5 @@
     <string name="motivation_bit_more_compact">Чуть-чуть</string>
     <string name="motivation_keep_going">Продолжайте в том же духе</string>
     <string name="motivation_keep_going_compact">Вперед</string>
+    <string name="motivation_infinite_success">Успех!</string>
 </resources>

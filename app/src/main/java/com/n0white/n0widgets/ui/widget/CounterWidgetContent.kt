@@ -114,7 +114,7 @@ fun CounterWidgetContent(counter: Counter) {
                         Text(
                             text = context.getString(R.string.counter_label),
                             style = TextStyle(
-                                fontSize = if (isHighRes) 11.sp else 10.sp, 
+                                fontSize = if (isHighRes) 11.sp else 10.sp,
                                 color = onSurfaceVariantColor
                             )
                         )
@@ -170,9 +170,11 @@ fun CounterWidgetContent(counter: Counter) {
 
                 // 2. Middle section (Progress block)
                 Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp)) {
+                    val mainText = if (counter.isInfinite) counter.getPassedTimeString(context) else counter.getRemainingTimeString(context)
+                    
                     if (isSmall) {
                         Text(
-                            text = counter.getRemainingTimeString(context),
+                            text = mainText,
                             style = TextStyle(
                                 fontSize = if (isHighRes) 22.sp else 20.sp,
                                 fontWeight = FontWeight.Bold,
@@ -181,8 +183,13 @@ fun CounterWidgetContent(counter: Counter) {
                         )
                         
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            val targetLabel = if (counter.isInfinite) {
+                                context.getString(R.string.target_milestone, counter.getNextMilestoneString(context))
+                            } else {
+                                context.getString(R.string.to_target, counter.getTargetDateString(isShort = true))
+                            }
                             Text(
-                                text = context.getString(R.string.to_target, counter.getTargetDateString(isShort = true)),
+                                text = targetLabel,
                                 style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = onSurfaceVariantColor)
                             )
                             
@@ -205,14 +212,13 @@ fun CounterWidgetContent(counter: Counter) {
                         Spacer(modifier = GlanceModifier.height(1.dp))
                         
                         val density = context.resources.displayMetrics.density
-                        val remainingText = counter.getRemainingTimeString(context)
                         
                         val baseAmountSize = if (isHighRes) 32.sp else 28.sp
                         val reducedAmountSize = if (isHighRes) 24.sp else 22.sp
                         
                         val amountAvailableWidth = (size.width.value.toInt() - 32 - 100).dp
                         val finalAmountFontSize = getDynamicFontSize(
-                            text = remainingText,
+                            text = mainText,
                             maxWidth = amountAvailableWidth,
                             baseSize = baseAmountSize,
                             reducedSize = reducedAmountSize,
@@ -224,7 +230,7 @@ fun CounterWidgetContent(counter: Counter) {
                             verticalAlignment = Alignment.CenterVertically 
                         ) {
                             Text(
-                                text = remainingText,
+                                text = mainText,
                                 style = TextStyle(
                                     fontSize = finalAmountFontSize,
                                     fontWeight = FontWeight.Bold,
@@ -238,7 +244,7 @@ fun CounterWidgetContent(counter: Counter) {
                                     style = TextStyle(fontSize = if (isHighRes) 10.sp else 9.sp, color = onSurfaceVariantColor)
                                 )
                                 Text(
-                                    text = counter.getTargetDateString(),
+                                    text = if (counter.isInfinite) counter.getNextMilestoneString(context) else counter.getTargetDateString(),
                                     style = TextStyle(fontSize = if (isHighRes) 12.sp else 10.sp, color = onSurfaceVariantColor)
                                 )
                             }
@@ -273,9 +279,22 @@ fun CounterWidgetContent(counter: Counter) {
                     )
                     Spacer(modifier = GlanceModifier.defaultWeight())
                     
-                    val footerLabel = if (isSmall) context.getString(R.string.passed_label_short) else context.getString(R.string.passed_label)
+                    val footerLabel = if (counter.isInfinite) {
+                        context.getString(R.string.remaining_milestone_label)
+                    } else if (isSmall) {
+                        context.getString(R.string.passed_label_short)
+                    } else {
+                        context.getString(R.string.passed_label)
+                    }
+                    
+                    val footerValue = if (counter.isInfinite) {
+                        counter.getRemainingTimeString(context)
+                    } else {
+                        counter.getPassedTimeString(context)
+                    }
+
                     Text(
-                        text = "$footerLabel${counter.getPassedTimeString(context)}",
+                        text = "$footerLabel$footerValue",
                         style = TextStyle(
                             fontSize = if (isHighRes) 12.sp else 10.sp,
                             color = onSurfaceVariantColor
