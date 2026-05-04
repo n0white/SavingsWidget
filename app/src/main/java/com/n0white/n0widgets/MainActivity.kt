@@ -2,6 +2,7 @@ package com.n0white.n0widgets
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,18 +12,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.n0white.n0widgets.data.CounterRepository
 import com.n0white.n0widgets.data.GoalRepository
@@ -61,6 +67,7 @@ fun MainApp() {
                     }
                     append("widgets")
                 },
+                modifier = Modifier.padding(start = 12.dp),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Medium
             )
@@ -91,6 +98,7 @@ fun ScreenScaffold(
     isMain: Boolean,
     content: @Composable () -> Unit
 ) {
+    val view = LocalView.current
     val scrollBehavior = if (isMain) {
         TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     } else {
@@ -120,54 +128,60 @@ fun ScreenScaffold(
                         scrollBehavior = scrollBehavior
                     )
                 } else {
-                    LargeTopAppBar(
-                        title = {
-                            val collapsedFraction = scrollBehavior.state.collapsedFraction
-                            // Текст зникає швидше (до 35% прокрутки) і з'являється пізніше (після 65%),
-                            // щоб уникнути накладання в проміжній зоні
-                            val titleAlpha = when {
-                                collapsedFraction < 0.35f -> 1f - (collapsedFraction / 0.35f)
-                                collapsedFraction > 0.65f -> (collapsedFraction - 0.65f) / 0.35f
-                                else -> 0f
-                            }
-
-                            Box(modifier = Modifier
-                                .graphicsLayer { alpha = titleAlpha }
-                                .padding(start = 16.dp)
-                            ) {
-                                val style = if (collapsedFraction > 0.5f) {
-                                    MaterialTheme.typography.titleLarge
-                                } else {
-                                    MaterialTheme.typography.headlineLarge
+                    val collapsedFraction = scrollBehavior.state.collapsedFraction
+                    
+                    Box {
+                        LargeTopAppBar(
+                            title = {},
+                            navigationIcon = {
+                                if (onBack != null) {
+                                    FilledTonalIconButton(
+                                        onClick = {
+                                            onBack()
+                                        },
+                                        modifier = Modifier.padding(start = 15.dp),
+                                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Outlined.ArrowBack,
+                                            contentDescription = stringResource(R.string.back)
+                                        )
+                                    }
                                 }
-                                ProvideTextStyle(value = style) {
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                scrolledContainerColor = Color.Transparent
+                            ),
+                            scrollBehavior = scrollBehavior
+                        )
+
+                        val scale = 1.8181818f + (1f - 1.8181818f) * collapsedFraction
+                        val startPadding = lerp(24.dp, 80.dp, collapsedFraction)
+                        val bottomPadding = lerp(0.dp, 18.dp, collapsedFraction)
+
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .padding(start = startPadding, bottom = bottomPadding),
+                            contentAlignment = Alignment.BottomStart
+                        ) {
+                            ProvideTextStyle(value = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Medium
+                            )) {
+                                Box(modifier = Modifier.graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                    transformOrigin = TransformOrigin(0f, 1f)
+                                }) {
                                     title()
                                 }
                             }
-                        },
-                        navigationIcon = {
-                            if (onBack != null) {
-                                FilledTonalIconButton(
-                                    onClick = onBack,
-                                    modifier = Modifier.padding(start = 23.dp),
-                                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                                    )
-                                ) {
-                                    // Explicit import-less icon usage if needed, but we have the import
-                                    Icon(
-                                        Icons.AutoMirrored.Outlined.ArrowBack,
-                                        contentDescription = stringResource(R.string.back)
-                                    )
-                                }
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent, // Background is handled by the parent Box
-                            scrolledContainerColor = Color.Transparent
-                        ),
-                        scrollBehavior = scrollBehavior
-                    )
+                        }
+                    }
                 }
             }
         }

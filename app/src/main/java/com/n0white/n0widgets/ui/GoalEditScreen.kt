@@ -1,6 +1,7 @@
 package com.n0white.n0widgets.ui
 
 import android.net.Uri
+import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +48,7 @@ fun GoalEditScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val view = LocalView.current
     var isSaved by remember { mutableStateOf(false) }
 
     val sw = context.resources.configuration.smallestScreenWidthDp
@@ -143,7 +146,7 @@ fun GoalEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 15.dp),
             verticalArrangement = Arrangement.spacedBy(if (isHighRes) 24.dp else 16.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -218,7 +221,10 @@ fun GoalEditScreen(
 
                     if (!backgroundImagePath.isNullOrEmpty()) {
                         Surface(
-                            onClick = { isBlurEnabled = !isBlurEnabled },
+                            onClick = { 
+                                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                isBlurEnabled = !isBlurEnabled 
+                            },
                             shape = middleShape,
                             color = MaterialTheme.colorScheme.surfaceBright,
                             modifier = Modifier.fillMaxWidth()
@@ -254,7 +260,10 @@ fun GoalEditScreen(
                                 }
                                 Switch(
                                     checked = isBlurEnabled,
-                                    onCheckedChange = { isBlurEnabled = it },
+                                    onCheckedChange = { 
+                                        view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                        isBlurEnabled = it 
+                                    },
                                     modifier = Modifier
                                         .scale(if (isHighRes) 1.1f else 1.0f)
                                         .padding(start = 12.dp),
@@ -275,7 +284,10 @@ fun GoalEditScreen(
                     }
 
                     Surface(
-                        onClick = { isWavy = !isWavy },
+                        onClick = { 
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                            isWavy = !isWavy 
+                        },
                         shape = bottomShape,
                         color = MaterialTheme.colorScheme.surfaceBright,
                         modifier = Modifier.fillMaxWidth()
@@ -311,7 +323,10 @@ fun GoalEditScreen(
                             }
                             Switch(
                                 checked = isWavy,
-                                onCheckedChange = { isWavy = it },
+                                onCheckedChange = { 
+                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                    isWavy = it 
+                                },
                                 modifier = Modifier
                                     .scale(if (isHighRes) 1.1f else 1.0f)
                                     .padding(start = 12.dp),
@@ -424,6 +439,7 @@ fun GoalEditScreen(
             ) {
                 OutlinedButton(
                     onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                         scope.launch {
                             repository.resetGoal()
                             SavingsWidget().updateAll(context)
@@ -441,6 +457,7 @@ fun GoalEditScreen(
 
                 Button(
                     onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                         val currentGoal = goal ?: return@Button
                         val updatedGoal = currentGoal.copy(
                             name = name,
