@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         goalRepository = GoalRepository(this)
         counterRepository = CounterRepository(this)
         com.n0white.n0widgets.ui.widget.MidnightUpdater.schedule(this)
+        com.n0white.n0widgets.ui.widget.WidgetPreviewManager.updateWidgetPreviews(this)
         enableEdgeToEdge()
 
         setContent {

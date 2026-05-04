@@ -6,6 +6,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.n0white.n0widgets.data.model.Counter
 import com.n0white.n0widgets.data.model.CounterFormat
 import com.n0white.n0widgets.ui.widget.CounterWidget
+import com.n0white.n0widgets.ui.widget.WidgetPreviewManager
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -81,5 +82,6 @@ class CounterRepository(val context: Context) {
 
         // Trigger immediate widget update
         CounterWidget().updateAll(context)
+        WidgetPreviewManager.updateWidgetPreviews(context)
     }
 }

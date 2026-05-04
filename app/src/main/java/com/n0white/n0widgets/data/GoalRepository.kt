@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.n0white.n0widgets.data.model.Goal
 import com.n0white.n0widgets.ui.widget.SavingsWidget
+import com.n0white.n0widgets.ui.widget.WidgetPreviewManager
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -100,5 +101,6 @@ class GoalRepository(val context: Context) {
         
         // Trigger immediate widget update
         SavingsWidget().updateAll(context)
+        WidgetPreviewManager.updateWidgetPreviews(context)
     }
 }
