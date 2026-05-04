@@ -63,7 +63,7 @@
     <string name="savings_label">Savings</string>
     <string name="counter_label">Counter</string>
     <string name="target_label">target</string>
-    <string name="target_milestone">target %1$s</string>
+    <string name="target_milestone">tgt. %1$s</string>
     <string name="progress_of">of %1$s%2$s</string>
     <string name="remaining_label">"remaining "</string>
     <string name="remaining_label_short">"left "</string>

@@ -34,9 +34,8 @@ data class Counter(
 
     val progress: Float get() = if (isInfinite) {
         val milestone = getNextMilestoneDate()
-        val previousMilestone = getPreviousMilestoneDate()
-        val total = ChronoUnit.DAYS.between(previousMilestone, milestone).coerceAtLeast(1)
-        val passed = ChronoUnit.DAYS.between(previousMilestone, LocalDate.now()).coerceAtLeast(0)
+        val total = ChronoUnit.DAYS.between(startDate, milestone).coerceAtLeast(1)
+        val passed = ChronoUnit.DAYS.between(startDate, LocalDate.now()).coerceAtLeast(0)
         (passed.toFloat() / total.toFloat()).coerceIn(0f, 1f)
     } else {
         (daysPassed.toFloat() / totalDays.toFloat()).coerceIn(0f, 1f)
@@ -82,29 +81,6 @@ data class Counter(
         while (true) {
             val date = startDate.plusYears(years.toLong())
             if (date.isAfter(LocalDate.now())) return date
-            years++
-        }
-    }
-
-    private fun getPreviousMilestoneDate(): LocalDate {
-        val weeks = listOf(4, 3, 2, 1)
-        for (w in weeks) {
-            val date = startDate.plusWeeks(w.toLong())
-            if (!date.isAfter(LocalDate.now())) return date
-        }
-
-        val months = listOf(6, 5, 4, 3, 2, 1)
-        for (m in months) {
-            val date = startDate.plusMonths(m.toLong())
-            if (!date.isAfter(LocalDate.now())) return date
-        }
-
-        var years = 1
-        while (true) {
-            val date = startDate.plusYears(years.toLong())
-            val nextDate = startDate.plusYears((years + 1).toLong())
-            if (!date.isAfter(LocalDate.now()) && nextDate.isAfter(LocalDate.now())) return date
-            if (date.isAfter(LocalDate.now())) return startDate // Should not happen if logic is correct
             years++
         }
     }

@@ -20,7 +20,7 @@ val GoogleSansRound = FontFamily(
             FontVariation.Setting("wght", 400f)
         )
     ),
-    Font(resId = R.font.google_sans_regular, weight = FontWeight.Normal),
+    Font(resId = R.font.google_sans_text_regular, weight = FontWeight.Normal),
     Font(
         resId = R.font.google_sans_flex_variable,
         weight = FontWeight.Medium,
@@ -29,7 +29,7 @@ val GoogleSansRound = FontFamily(
             FontVariation.Setting("wght", 500f)
         )
     ),
-    Font(resId = R.font.google_sans_medium, weight = FontWeight.Medium),
+    Font(resId = R.font.google_sans_text_medium, weight = FontWeight.Medium),
     Font(
         resId = R.font.google_sans_flex_variable,
         weight = FontWeight.Bold,
@@ -38,13 +38,13 @@ val GoogleSansRound = FontFamily(
             FontVariation.Setting("wght", 700f)
         )
     ),
-    Font(resId = R.font.google_sans_bold, weight = FontWeight.Bold)
+    Font(resId = R.font.google_sans_text_bold, weight = FontWeight.Bold)
 )
 
 val GoogleSansCyrillic = FontFamily(
-    Font(resId = R.font.google_sans_regular, weight = FontWeight.Normal),
-    Font(resId = R.font.google_sans_medium, weight = FontWeight.Medium),
-    Font(resId = R.font.google_sans_bold, weight = FontWeight.Bold)
+    Font(resId = R.font.google_sans_text_regular, weight = FontWeight.Normal),
+    Font(resId = R.font.google_sans_text_medium, weight = FontWeight.Medium),
+    Font(resId = R.font.google_sans_text_bold, weight = FontWeight.Bold)
 )
 
 val CyrillicTypography = Typography(
