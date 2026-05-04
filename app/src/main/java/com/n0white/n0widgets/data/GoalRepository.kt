@@ -9,7 +9,6 @@ import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.delay
 import java.util.Calendar
 
 private val Context.goalDataStore by preferencesDataStore(name = "settings_savings")
@@ -99,8 +98,7 @@ class GoalRepository(val context: Context) {
             }
         }
         
-        // Ensure the data is persisted and trigger update
-        delay(100)
-        SavingsWidget().updateAll(context.applicationContext)
+        // Trigger immediate widget update
+        SavingsWidget().updateAll(context)
     }
 }

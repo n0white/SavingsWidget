@@ -178,6 +178,7 @@ fun SavingsWidgetContent(goal: Goal) {
                                 .cornerRadius(if (isHighRes) 14.dp else 12.dp)
                                 .clickable(actionStartActivity(Intent(context, AddAmountActivity::class.java).apply {
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    // Use sourceBounds for the animation (standard Android behavior when actionStartActivity is used from widget)
                                 })),
                             contentAlignment = Alignment.Center
                         ) {

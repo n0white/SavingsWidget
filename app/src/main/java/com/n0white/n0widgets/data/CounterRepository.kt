@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.n0white.n0widgets.data.model.Counter
 import com.n0white.n0widgets.data.model.CounterFormat
+import com.n0white.n0widgets.ui.widget.CounterWidget
+import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -76,5 +78,8 @@ class CounterRepository(val context: Context) {
             counter.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)
             counter.customSecondaryContainer?.let { prefs[KEY_COLOR_SECONDARY_CONTAINER] = it } ?: prefs.remove(KEY_COLOR_SECONDARY_CONTAINER)
         }
+
+        // Trigger immediate widget update
+        CounterWidget().updateAll(context)
     }
 }

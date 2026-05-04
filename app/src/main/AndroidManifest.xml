@@ -44,7 +44,9 @@
             android:name="com.n0white.n0widgets.AddAmountActivity"
             android:exported="true"
             android:theme="@style/Theme.Transparent"
-            android:excludeFromRecents="true" />
+            android:excludeFromRecents="true"
+            android:taskAffinity="com.n0white.n0widgets.dialog"
+            android:launchMode="singleInstance" />
 
         <receiver
             android:name="com.n0white.n0widgets.ui.widget.SavingsWidgetReceiver"

@@ -21,6 +21,7 @@
     <string name="reset">Сбросить</string>
     <string name="save_changes">Сохранить изменения</string>
     <string name="saved_success">Сохранено!</string>
+    <string name="add">Добавить</string>
 
     <!-- Categories -->
     <string name="settings_category_appearance">Внешний вид</string>

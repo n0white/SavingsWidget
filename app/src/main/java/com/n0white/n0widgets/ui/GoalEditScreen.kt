@@ -117,7 +117,6 @@ fun GoalEditScreen(
                             customSecondaryContainer = palette.getDarkMutedColor(0)
                         )
                     )
-                    SavingsWidget().updateAll(context)
                 }
             }
         }
@@ -182,7 +181,6 @@ fun GoalEditScreen(
                                             customSecondaryContainer = null
                                         )
                                     )
-                                    SavingsWidget().updateAll(context)
                                 }
                             }
                         },
@@ -305,7 +303,7 @@ fun GoalEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    if (isWavy) Icons.Outlined.Waves else Icons.Outlined.LinearScale,
+                                    Icons.Outlined.Waves,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -367,7 +365,7 @@ fun GoalEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    if (isPlusButtonEnabled) Icons.Outlined.AddCircleOutline else Icons.Outlined.AddCircle,
+                                    Icons.Outlined.AddCircleOutline,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -547,7 +545,6 @@ fun GoalEditScreen(
                                 customSecondaryContainer = null
                             )
                             repository.updateGoal(updatedGoal)
-                            SavingsWidget().updateAll(context)
                         }
                     },
                     modifier = Modifier
@@ -577,9 +574,6 @@ fun GoalEditScreen(
                         scope.launch {
                             repository.updateGoal(updatedGoal)
                             
-                            // Force immediate widget refresh from the UI side
-                            SavingsWidget().updateAll(context)
-
                             isSaved = true
                             delay(2000)
                             isSaved = false

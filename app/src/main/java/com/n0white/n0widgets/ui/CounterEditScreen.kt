@@ -122,7 +122,6 @@ fun CounterEditScreen(
                             customSecondaryContainer = palette.getDarkMutedColor(0)
                         )
                     )
-                    CounterWidget().updateAll(context)
                 }
             }
         }
@@ -187,7 +186,6 @@ fun CounterEditScreen(
                                             customSecondaryContainer = null
                                         )
                                     )
-                                    CounterWidget().updateAll(context)
                                 }
                             }
                         },
@@ -310,7 +308,7 @@ fun CounterEditScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                 Icon(
-                                    if (isWavy) Icons.Outlined.Waves else Icons.Outlined.LinearScale,
+                                    Icons.Outlined.Waves,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
@@ -556,7 +554,6 @@ fun CounterEditScreen(
                                 customSecondaryContainer = null
                             )
                             repository.updateCounter(updatedCounter)
-                            CounterWidget().updateAll(context)
                         }
                     },
                     modifier = Modifier
@@ -584,7 +581,6 @@ fun CounterEditScreen(
                         )
                         scope.launch {
                             repository.updateCounter(updatedCounter)
-                            CounterWidget().updateAll(context)
                             com.n0white.n0widgets.ui.widget.MidnightUpdater.schedule(context)
                             isSaved = true
                             delay(2000)

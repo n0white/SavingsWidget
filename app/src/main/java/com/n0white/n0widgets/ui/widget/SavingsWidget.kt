@@ -20,9 +20,16 @@ class SavingsWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val repo = GoalRepository(context)
-        val goal = repo.goalFlow.first()
 
         provideContent {
+            val goal by repo.goalFlow.collectAsState(
+                initial = Goal(
+                    name = "Loading...",
+                    emoji = "💰",
+                    savedAmount = 0.0,
+                    targetAmount = 0.0
+                )
+            )
             SavingsWidgetContent(goal = goal)
         }
     }

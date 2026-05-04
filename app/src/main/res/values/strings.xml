@@ -21,6 +21,7 @@
     <string name="reset">Reset</string>
     <string name="save_changes">Save Changes</string>
     <string name="saved_success">Saved!</string>
+    <string name="add">Add</string>
 
     <!-- Categories -->
     <string name="settings_category_appearance">Appearance</string>
