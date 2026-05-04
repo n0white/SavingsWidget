@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -163,6 +164,10 @@ fun ScreenScaffold(
                         val startPadding = lerp(24.dp, 80.dp, collapsedFraction)
                         val bottomPadding = lerp(0.dp, 18.dp, collapsedFraction)
 
+                        val configuration = LocalConfiguration.current
+                        val screenWidth = configuration.screenWidthDp.dp
+                        val maxTitleWidth = (screenWidth - startPadding - 16.dp) / scale
+
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -173,11 +178,13 @@ fun ScreenScaffold(
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Medium
                             )) {
-                                Box(modifier = Modifier.graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                    transformOrigin = TransformOrigin(0f, 1f)
-                                }) {
+                                Box(modifier = Modifier
+                                    .widthIn(max = maxTitleWidth)
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        transformOrigin = TransformOrigin(0f, 1f)
+                                    }) {
                                     title()
                                 }
                             }

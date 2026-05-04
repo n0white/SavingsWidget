@@ -66,6 +66,7 @@ fun CounterEditScreen(
     var startDate by remember { mutableStateOf(LocalDate.now()) }
     var targetDate by remember { mutableStateOf(LocalDate.now().plusMonths(1)) }
     var formatMode by remember { mutableStateOf(CounterFormat.DAYS_ONLY) }
+    var isInfinite by remember { mutableStateOf(false) }
     var isWavy by remember { mutableStateOf(true) }
     var isBlurEnabled by remember { mutableStateOf(false) }
     var backgroundImagePath by remember { mutableStateOf<String?>(null) }
@@ -79,6 +80,7 @@ fun CounterEditScreen(
             startDate = counter.startDate
             targetDate = counter.targetDate
             formatMode = counter.formatMode
+            isInfinite = counter.isInfinite
             isWavy = counter.isWavy
             isBlurEnabled = counter.isBlurEnabled
             backgroundImagePath = counter.backgroundImagePath
@@ -173,6 +175,68 @@ fun CounterEditScreen(
                 ) {
                     Surface(
                         onClick = {
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                            isInfinite = !isInfinite
+                        },
+                        shape = topShape,
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 80.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                Icon(
+                                    Icons.Outlined.AllInclusive,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.infinite_counter),
+                                        style = if (isHighRes) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.infinite_counter_description),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = isInfinite,
+                                onCheckedChange = {
+                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                                    isInfinite = it
+                                },
+                                modifier = Modifier
+                                    .scale(if (isHighRes) 1.1f else 1.0f)
+                                    .padding(start = 12.dp),
+                                thumbContent = if (isInfinite) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    Surface(
+                        onClick = {
                             if (backgroundImagePath.isNullOrEmpty()) {
                                 photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                             } else {
@@ -189,7 +253,7 @@ fun CounterEditScreen(
                                 }
                             }
                         },
-                        shape = topShape,
+                        shape = middleShape,
                         color = MaterialTheme.colorScheme.surfaceBright,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -494,8 +558,12 @@ fun CounterEditScreen(
                                 onValueChange = {},
                                 label = { Text(stringResource(R.string.target_date)) },
                                 readOnly = true,
+                                enabled = !isInfinite,
                                 trailingIcon = {
-                                    IconButton(onClick = { showTargetDatePicker = true }) {
+                                    IconButton(
+                                        onClick = { showTargetDatePicker = true },
+                                        enabled = !isInfinite
+                                    ) {
                                         Icon(Icons.Outlined.Event, null)
                                     }
                                 },
@@ -532,6 +600,7 @@ fun CounterEditScreen(
                             targetDate = LocalDate.now().plusMonths(1)
                             isWavy = false
                             isBlurEnabled = false
+                            isInfinite = false
                             backgroundImagePath = null
                             formatMode = CounterFormat.DAYS_ONLY
 
@@ -547,6 +616,7 @@ fun CounterEditScreen(
                                 targetDate = LocalDate.now().plusMonths(1),
                                 isWavy = false,
                                 isBlurEnabled = false,
+                                isInfinite = false,
                                 backgroundImagePath = null,
                                 formatMode = CounterFormat.DAYS_ONLY,
                                 customPrimary = null,
@@ -576,6 +646,7 @@ fun CounterEditScreen(
                             startDate = startDate,
                             targetDate = targetDate,
                             formatMode = formatMode,
+                            isInfinite = isInfinite,
                             isWavy = isWavy,
                             isBlurEnabled = isBlurEnabled
                         )

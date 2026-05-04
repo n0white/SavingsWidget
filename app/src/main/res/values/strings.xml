@@ -49,6 +49,9 @@
 
     <!-- Counter Settings -->
     <string name="counter_settings_title">Counter Settings</string>
+    <string name="infinite_counter">Infinite Counter</string>
+    <string name="infinite_counter_description">Track time without a fixed target date</string>
+    <string name="infinite_for_prefix">for %1$s</string>
     <string name="counter_name">Counter Name</string>
     <string name="start_date">Start Date</string>
     <string name="target_date">Target Date</string>
@@ -60,9 +63,11 @@
     <string name="savings_label">Savings</string>
     <string name="counter_label">Counter</string>
     <string name="target_label">target</string>
+    <string name="target_milestone">tgt. %1$s</string>
     <string name="progress_of">of %1$s%2$s</string>
     <string name="remaining_label">"remaining "</string>
     <string name="remaining_label_short">"left "</string>
+    <string name="remaining_milestone_label">"until target "</string>
     <string name="passed_label">"already passed "</string>
     <string name="passed_label_short">"passed "</string>
     <string name="to_target">to %1$s</string>
@@ -73,6 +78,24 @@
         <item quantity="one">1 day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
+    <plurals name="weeks_count">
+        <item quantity="one">1 week</item>
+        <item quantity="other">%1$d weeks</item>
+    </plurals>
+    <plurals name="months_count">
+        <item quantity="one">1 month</item>
+        <item quantity="other">%1$d months</item>
+    </plurals>
+    <plurals name="years_count">
+        <item quantity="one">1 year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
+    <plurals name="years_full">
+        <item quantity="one">%1$d year</item>
+        <item quantity="other">%1$d years</item>
+    </plurals>
+    <string name="years_short_one">%1$d y</string>
+    <string name="years_short_other">%1$d y</string>
     <string name="years_short">%1$d y</string>
     <string name="months_short">%1$d m</string>
     <string name="days_short">%1$d d</string>
@@ -87,4 +110,5 @@
     <string name="motivation_bit_more_compact">Bit more</string>
     <string name="motivation_keep_going">Keep going</string>
     <string name="motivation_keep_going_compact">Going</string>
+    <string name="motivation_infinite_success">Success!</string>
 </resources>

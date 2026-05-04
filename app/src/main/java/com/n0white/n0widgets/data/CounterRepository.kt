@@ -23,6 +23,7 @@ class CounterRepository(val context: Context) {
         val KEY_START_DATE = stringPreferencesKey("counter_start_date")
         val KEY_TARGET_DATE = stringPreferencesKey("counter_target_date")
         val KEY_FORMAT_MODE = stringPreferencesKey("counter_format_mode")
+        val KEY_IS_INFINITE = booleanPreferencesKey("counter_is_infinite")
         val KEY_IS_WAVY = booleanPreferencesKey("counter_is_wavy")
         val KEY_BG_IMAGE = stringPreferencesKey("counter_bg_image_path")
         val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("counter_is_blur_enabled")
@@ -49,6 +50,7 @@ class CounterRepository(val context: Context) {
             startDate = startDate,
             targetDate = targetDate,
             formatMode = formatMode,
+            isInfinite = prefs[KEY_IS_INFINITE] ?: false,
             isWavy = prefs[KEY_IS_WAVY] ?: false,
             backgroundImagePath = prefs[KEY_BG_IMAGE],
             isBlurEnabled = prefs[KEY_IS_BLUR_ENABLED] ?: false,
@@ -71,6 +73,7 @@ class CounterRepository(val context: Context) {
             prefs[KEY_START_DATE] = counter.startDate.format(formatter)
             prefs[KEY_TARGET_DATE] = counter.targetDate.format(formatter)
             prefs[KEY_FORMAT_MODE] = counter.formatMode.name
+            prefs[KEY_IS_INFINITE] = counter.isInfinite
             prefs[KEY_IS_WAVY] = counter.isWavy
             prefs[KEY_BG_IMAGE] = counter.backgroundImagePath ?: ""
             prefs[KEY_IS_BLUR_ENABLED] = counter.isBlurEnabled
