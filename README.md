@@ -2,27 +2,31 @@
 
 A beautiful, minimalist Android widgets, built with **Jetpack Glance** and **Material You Expressive**.
 
-## Features
+## ✨ Key features
+- **Widgets**: Counter and Savings (further more...).
 - **Material You Expressive Design**: Automatically adapts to your wallpaper colors (Monet).
 - **Responsive Layout**: Looks great in 2x2 grid size and expands beautifully for larger layouts.
 - **Dynamic Content**: Shows your goal name, emoji, saved amount, target amount, and progress.
 - **Quick Navigation**: Tap the widget to jump directly into the app and update your progress.
-- **English Localization**: Fully localized for international use.
+- **English, Ukrainian and Russian Localization**: Localized for international use.
+- **Predictive back**: Support and more animations
+- **Haptic feedback**
+
+## ⬇️ Downloads
+[<img width="240" height="90" alt="Get it on Telegram" src="https://github.com/user-attachments/assets/dc7eb1e0-91d7-42ef-9c79-d29b759c0376" />](https://t.me/n0shitty)
+
+[<img src="https://github.com/HotarunIchijou/Nouto/blob/8f01ad03341048cf3258f39575d34a1a66c62121/assets/badges/get-it-on-github.png" height="90" alt="Get it on GitHub">](https://github.com/n0white/n0widgets/releases/latest)
+
+## 🎨 Screenshots
+| ![Screenshot 1](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-032140.png) | ![Screenshot 2](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-163140.png) | ![Screenshot 3](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-164044.png) |
+|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| ![Screenshot 4](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-164118.png) | ![Screenshot 5](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165224.png) | ![Screenshot 6](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165420.png) |
+| ![Screenshot 7](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165443.png) | ![Screenshot 8](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165453.png) | ![Screenshot 9](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165551.png) |
 
 ## Technologies Used
 - [Jetpack Glance](https://developer.android.com/jetpack/compose/glance) - Modern app widgets with Compose-like syntax.
 - [Material 3](https://m3.material.io/) - The latest design language from Google.
 - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) - Fast and safe data storage for your goals.
-
-## Screenshots
-<img width="512" height="544" alt="image" src="https://github.com/user-attachments/assets/15390757-2054-423a-946b-2ca56ffee8b8" />
-<img width="801" height="528" alt="image" src="https://github.com/user-attachments/assets/f8404ee2-fc50-479f-9d24-d4b2793f7fc7" />
-<img width="1008" height="532" alt="image" src="https://github.com/user-attachments/assets/2a80621c-1817-4bf0-b1bf-3593a9c0a2ea" />
-<img width="2560" height="1477" alt="image" src="https://github.com/user-attachments/assets/47f25102-bd6c-4551-a4da-f803a00e5940" />
-<img width="2560" height="1959" alt="image" src="https://github.com/user-attachments/assets/3097cb6c-2004-416e-8998-a053b6f19bf3" />
-<img width="2293" height="2560" alt="image" src="https://github.com/user-attachments/assets/120a3d74-54dc-4725-b7d0-c56e52bc39e0" />
-<img width="575" height="326" alt="image" src="https://github.com/user-attachments/assets/b659dc7d-8575-43c7-8e09-0bfd35ebe813" />
-<img width="1147" height="2560" alt="image" src="https://github.com/user-attachments/assets/6d2538cd-80d1-47bf-9efc-0c2ed6c435d1" />
 
 ## How to Build
 1. Clone the repository.
