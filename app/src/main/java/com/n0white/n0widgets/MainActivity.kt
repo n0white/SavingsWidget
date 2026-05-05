@@ -64,7 +64,7 @@ fun MainApp() {
             Text(
                 text = buildAnnotatedString {
                     append("n")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                         append("0")
                     }
                     append("widgets")
@@ -90,6 +90,11 @@ fun MainApp() {
             },
             onNavigateToSettings = {
                 val intent = Intent(context, SettingsActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
+            },
+            onNavigateToAbout = {
+                val intent = Intent(context, AboutActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 context.startActivity(intent)
             }
