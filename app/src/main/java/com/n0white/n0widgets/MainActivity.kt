@@ -87,6 +87,11 @@ fun MainApp() {
                 val intent = Intent(context, CounterActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 context.startActivity(intent)
+            },
+            onNavigateToSettings = {
+                val intent = Intent(context, SettingsActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                context.startActivity(intent)
             }
         )
     }

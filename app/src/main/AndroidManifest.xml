@@ -41,6 +41,13 @@
             android:theme="@style/Theme.SavingsWidget" />
 
         <activity
+            android:name="com.n0white.n0widgets.SettingsActivity"
+            android:exported="true"
+            android:label="@string/settings_title"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.SavingsWidget" />
+
+        <activity
             android:name="com.n0white.n0widgets.AddAmountActivity"
             android:exported="true"
             android:theme="@style/Theme.Transparent"
@@ -54,6 +61,7 @@
             android:label="@string/widget_savings_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -68,6 +76,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.n0white.n0widgets.ACTION_REFRESH_COUNTER" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

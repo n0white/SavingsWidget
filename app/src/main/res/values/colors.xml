@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_overlay">#B3FFFFFF</color>
+    <color name="widget_on_image_primary">#FF000000</color>
+    <color name="widget_on_image_secondary">#CC000000</color>
+    <color name="widget_on_image_tertiary_container">#26000000</color>
+
+    <!-- Specific theme colors for forcing dark mode on widgets -->
+    <color name="widget_overlay_night">#80000000</color>
+    <color name="widget_on_image_primary_night">#FFFFFFFF</color>
+    <color name="widget_on_image_secondary_night">#CCFFFFFF</color>
+    <color name="widget_on_image_tertiary_container_night">#26FFFFFF</color>
+    <color name="widget_background_night">#FF1C1B1F</color> <!-- Material dark background -->
+</resources>

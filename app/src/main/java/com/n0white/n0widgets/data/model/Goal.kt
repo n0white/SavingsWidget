@@ -16,7 +16,9 @@ data class Goal(
     val isBlurEnabled: Boolean = false,
     val isPlusButtonEnabled: Boolean = false,
     val customPrimary: Int? = null,
+    val customPrimaryInverse: Int? = null,
     val customOnSurface: Int? = null,
+    val customOnSurfaceInverse: Int? = null,
     val customSecondaryContainer: Int? = null
 ) {
     val progress: Float get() = if (targetAmount > 0) (savedAmount / targetAmount).toFloat().coerceAtLeast(0f) else 0f

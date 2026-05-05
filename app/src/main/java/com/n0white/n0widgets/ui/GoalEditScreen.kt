@@ -102,18 +102,28 @@ fun GoalEditScreen(
                         return androidx.core.graphics.ColorUtils.HSLToColor(hsl)
                     }
 
+                    fun forceDarken(color: Int): Int {
+                        val hsl = FloatArray(3)
+                        androidx.core.graphics.ColorUtils.colorToHSL(color, hsl)
+                        hsl[2] = 0.25f
+                        return androidx.core.graphics.ColorUtils.HSLToColor(hsl)
+                    }
+
                     val baseColor = palette.getLightVibrantColor(
                         palette.getVibrantColor(
                             palette.getLightMutedColor(Color.White.toArgb())
                         )
                     )
                     val ultraLightColor = forceLighten(baseColor)
+                    val ultraDarkColor = forceDarken(baseColor)
 
                     repository.updateGoal(
                         currentGoal.copy(
                             backgroundImagePath = path,
                             customPrimary = ultraLightColor,
+                            customPrimaryInverse = ultraDarkColor,
                             customOnSurface = ultraLightColor,
+                            customOnSurfaceInverse = ultraDarkColor,
                             customSecondaryContainer = palette.getDarkMutedColor(0)
                         )
                     )
@@ -177,7 +187,9 @@ fun GoalEditScreen(
                                         currentGoal.copy(
                                             backgroundImagePath = null,
                                             customPrimary = null,
+                                            customPrimaryInverse = null,
                                             customOnSurface = null,
+                                            customOnSurfaceInverse = null,
                                             customSecondaryContainer = null
                                         )
                                     )
@@ -541,7 +553,9 @@ fun GoalEditScreen(
                                 isBlurEnabled = false,
                                 backgroundImagePath = null,
                                 customPrimary = null,
+                                customPrimaryInverse = null,
                                 customOnSurface = null,
+                                customOnSurfaceInverse = null,
                                 customSecondaryContainer = null
                             )
                             repository.updateGoal(updatedGoal)

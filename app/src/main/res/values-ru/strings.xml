@@ -120,4 +120,11 @@
     <string name="motivation_keep_going">Продолжайте в том же духе</string>
     <string name="motivation_keep_going_compact">Вперед</string>
     <string name="motivation_infinite_success">Успех!</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_description">Настройте поведение приложения</string>
+    <string name="other_category">Другое</string>
+    <string name="theme_background_title">Фоновая тема</string>
+    <string name="theme_background_description">Позволяет фоновым изображениям адаптироваться под светлую тему системы</string>
 </resources>

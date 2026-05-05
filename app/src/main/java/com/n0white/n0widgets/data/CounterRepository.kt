@@ -28,9 +28,11 @@ class CounterRepository(val context: Context) {
         val KEY_BG_IMAGE = stringPreferencesKey("counter_bg_image_path")
         val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("counter_is_blur_enabled")
         val KEY_COLOR_PRIMARY = intPreferencesKey("counter_color_primary")
+        val KEY_COLOR_PRIMARY_INVERSE = intPreferencesKey("counter_color_primary_inverse")
         val KEY_COLOR_ON_SURFACE = intPreferencesKey("counter_color_on_surface")
+        val KEY_COLOR_ON_SURFACE_INVERSE = intPreferencesKey("counter_color_on_surface_inverse")
         val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("counter_color_secondary_container")
-        
+
         private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     }
 
@@ -55,7 +57,9 @@ class CounterRepository(val context: Context) {
             backgroundImagePath = prefs[KEY_BG_IMAGE],
             isBlurEnabled = prefs[KEY_IS_BLUR_ENABLED] ?: false,
             customPrimary = prefs[KEY_COLOR_PRIMARY],
+            customPrimaryInverse = prefs[KEY_COLOR_PRIMARY_INVERSE],
             customOnSurface = prefs[KEY_COLOR_ON_SURFACE],
+            customOnSurfaceInverse = prefs[KEY_COLOR_ON_SURFACE_INVERSE],
             customSecondaryContainer = prefs[KEY_COLOR_SECONDARY_CONTAINER]
         )
     }
@@ -79,7 +83,9 @@ class CounterRepository(val context: Context) {
             prefs[KEY_IS_BLUR_ENABLED] = counter.isBlurEnabled
             
             counter.customPrimary?.let { prefs[KEY_COLOR_PRIMARY] = it } ?: prefs.remove(KEY_COLOR_PRIMARY)
+            counter.customPrimaryInverse?.let { prefs[KEY_COLOR_PRIMARY_INVERSE] = it } ?: prefs.remove(KEY_COLOR_PRIMARY_INVERSE)
             counter.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)
+            counter.customOnSurfaceInverse?.let { prefs[KEY_COLOR_ON_SURFACE_INVERSE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE_INVERSE)
             counter.customSecondaryContainer?.let { prefs[KEY_COLOR_SECONDARY_CONTAINER] = it } ?: prefs.remove(KEY_COLOR_SECONDARY_CONTAINER)
         }
 
