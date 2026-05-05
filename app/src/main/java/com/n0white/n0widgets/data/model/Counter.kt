@@ -25,7 +25,9 @@ data class Counter(
     val backgroundImagePath: String? = null,
     val isBlurEnabled: Boolean = false,
     val customPrimary: Int? = null,
+    val customPrimaryInverse: Int? = null,
     val customOnSurface: Int? = null,
+    val customOnSurfaceInverse: Int? = null,
     val customSecondaryContainer: Int? = null
 ) {
     val totalDays: Long get() = ChronoUnit.DAYS.between(startDate, targetDate).coerceAtLeast(1)

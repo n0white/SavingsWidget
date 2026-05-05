@@ -19,6 +19,8 @@ import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
+import androidx.glance.color.ColorProvider
 import com.n0white.n0widgets.CounterActivity
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.model.Counter
@@ -26,55 +28,94 @@ import java.io.File
 import kotlin.math.roundToInt
 
 @Composable
-fun CounterWidgetContent(counter: Counter) {
+fun CounterWidgetContent(counter: Counter, isThemeBackgroundEnabled: Boolean) {
     val size = LocalSize.current
     val context = LocalContext.current
     val isSmall = size.width < 200.dp
-    val colors = GlanceTheme.colors
-    
     val sw = context.resources.configuration.smallestScreenWidthDp
     val isHighRes = sw >= 400
 
-    val isBgImagePresent = !counter.backgroundImagePath.isNullOrEmpty()
-    val isBgImageDark = counter.customOnSurface?.let { 
-        val c = Color(it)
-        (0.299 * c.red + 0.587 * c.green + 0.114 * c.blue) > 0.5 
-    } ?: false
-
-    val primaryColor = counter.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it)) } 
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.primaryContainer else colors.primary
-        } else colors.primary
-
-    val secondaryContainerColor = counter.customSecondaryContainer?.let { androidx.glance.unit.ColorProvider(Color(it)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.secondaryContainer else colors.secondary
-        } else colors.secondaryContainer
-
-    val onSurfaceColor = counter.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurface
-    val onSurfaceVariantColor = counter.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurfaceVariant
-    
-    val tertiaryContainerColor = counter.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it).copy(alpha = 0.2f)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.tertiaryContainer else colors.tertiary
-        } else colors.tertiaryContainer
-
-    val onTertiaryContainerColor = counter.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.onTertiaryContainer else colors.onTertiary
-        } else colors.onTertiaryContainer
-
     GlanceTheme {
+        val colors = GlanceTheme.colors
+        val isBgImagePresent = !counter.backgroundImagePath.isNullOrEmpty()
+        val forceDark = isBgImagePresent && !isThemeBackgroundEnabled
+
+        // These providers will automatically switch based on system theme
+        val overlayColorProvider = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_overlay_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_overlay)
+        }
+
+        val onImagePrimary = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_primary_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_primary)
+        }
+        
+        val onImageSecondary = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_secondary_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_secondary)
+        }
+        
+        val onImageTertiaryContainer = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_tertiary_container_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_tertiary_container)
+        }
+
+        val primaryColor = if (counter.customPrimary != null && counter.customPrimaryInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(counter.customPrimary))
+            } else {
+                androidx.glance.color.ColorProvider(day = Color(counter.customPrimaryInverse), night = Color(counter.customPrimary))
+            }
+        } else {
+            counter.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+                ?: if (isBgImagePresent) onImagePrimary else colors.primary
+        }
+
+        val secondaryContainerColor = counter.customSecondaryContainer?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+            ?: if (isBgImagePresent) onImageSecondary else colors.secondaryContainer
+
+        val onSurfaceColor = if (counter.customOnSurface != null && counter.customOnSurfaceInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(counter.customOnSurface))
+            } else {
+                androidx.glance.color.ColorProvider(day = Color(counter.customOnSurfaceInverse), night = Color(counter.customOnSurface))
+            }
+        } else {
+            counter.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurface
+        }
+        
+        val onSurfaceVariantColor = onSurfaceColor
+        
+        val tertiaryContainerColor = if (counter.customPrimary != null && counter.customPrimaryInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(counter.customPrimary).copy(alpha = 0.2f))
+            } else {
+                androidx.glance.color.ColorProvider(
+                    day = Color(counter.customPrimaryInverse).copy(alpha = 0.2f),
+                    night = Color(counter.customPrimary).copy(alpha = 0.2f)
+                )
+            }
+        } else {
+            counter.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it).copy(alpha = 0.2f)) }
+                ?: if (isBgImagePresent) onImageTertiaryContainer else colors.tertiaryContainer
+        }
+
+        val onTertiaryContainerColor = onSurfaceColor
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(colors.widgetBackground)
+                .background(if (forceDark) androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_background_night))) else colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .clickable(actionStartActivity(android.content.Intent(context, CounterActivity::class.java).apply {
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
         ) {
-            // Background Image
             if (!counter.backgroundImagePath.isNullOrEmpty()) {
                 val file = File(counter.backgroundImagePath)
                 if (file.exists()) {
@@ -95,7 +136,7 @@ fun CounterWidgetContent(counter: Counter) {
                         Box(
                             modifier = GlanceModifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.5f))
+                                .background(overlayColorProvider)
                                 .cornerRadius(24.dp)
                         ) {}
                     }
@@ -105,7 +146,6 @@ fun CounterWidgetContent(counter: Counter) {
             Column(
                 modifier = GlanceModifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // 1. Header
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
@@ -121,18 +161,10 @@ fun CounterWidgetContent(counter: Counter) {
                         val density = context.resources.displayMetrics.density
                         val baseFontSize = if (isHighRes) 21.sp else 19.sp
                         val reducedFontSize = if (isHighRes) 17.sp else 16.sp
-                        
                         val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
-                        
                         val displayName = counter.name.ifBlank { context.getString(R.string.default_counter_name) }
                         val finalFontSize = if (!isSmall) {
-                            getDynamicFontSize(
-                                text = displayName,
-                                maxWidth = availableWidthDp,
-                                baseSize = baseFontSize,
-                                reducedSize = reducedFontSize,
-                                density = density
-                            )
+                            getDynamicFontSize(displayName, availableWidthDp, baseFontSize, reducedFontSize, density)
                         } else {
                             if (isHighRes) 20.sp else 18.sp
                         }
@@ -168,7 +200,6 @@ fun CounterWidgetContent(counter: Counter) {
 
                 Spacer(modifier = GlanceModifier.defaultWeight())
 
-                // 2. Middle section (Progress block)
                 Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp)) {
                     val mainText = if (counter.isInfinite) counter.getPassedTimeString(context) else counter.getRemainingTimeString(context)
                     
@@ -202,7 +233,6 @@ fun CounterWidgetContent(counter: Counter) {
                             )
                         }
                     } else {
-                        // Large Widget
                         StatusChip(
                             text = counter.getMotivationPhrase(context, false), 
                             isHighRes = isHighRes,
@@ -212,18 +242,10 @@ fun CounterWidgetContent(counter: Counter) {
                         Spacer(modifier = GlanceModifier.height(1.dp))
                         
                         val density = context.resources.displayMetrics.density
-                        
                         val baseAmountSize = if (isHighRes) 32.sp else 28.sp
                         val reducedAmountSize = if (isHighRes) 24.sp else 22.sp
-                        
                         val amountAvailableWidth = (size.width.value.toInt() - 32 - 100).dp
-                        val finalAmountFontSize = getDynamicFontSize(
-                            text = mainText,
-                            maxWidth = amountAvailableWidth,
-                            baseSize = baseAmountSize,
-                            reducedSize = reducedAmountSize,
-                            density = density
-                        )
+                        val finalAmountFontSize = getDynamicFontSize(mainText, amountAvailableWidth, baseAmountSize, reducedAmountSize, density)
 
                         Row(
                             modifier = GlanceModifier.fillMaxWidth(),
@@ -252,7 +274,6 @@ fun CounterWidgetContent(counter: Counter) {
                     }
                     Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
 
-                    // Progress Bar
                     WavyProgressIndicator(
                         progress = counter.progress,
                         colorProvider = primaryColor,
@@ -264,7 +285,6 @@ fun CounterWidgetContent(counter: Counter) {
 
                 Spacer(modifier = GlanceModifier.height(if (isHighRes) 8.dp else 6.dp))
 
-                // 3. Footer
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -310,8 +330,8 @@ fun CounterWidgetContent(counter: Counter) {
 fun StatusChip(
     text: String, 
     isHighRes: Boolean = false,
-    containerColor: androidx.glance.unit.ColorProvider? = null,
-    contentColor: androidx.glance.unit.ColorProvider? = null
+    containerColor: ColorProvider? = null,
+    contentColor: ColorProvider? = null
 ) {
     val colors = GlanceTheme.colors
     val finalContainer = containerColor ?: colors.tertiaryContainer

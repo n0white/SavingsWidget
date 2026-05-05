@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_overlay">#80000000</color>
+    <color name="widget_on_image_primary">#FFFFFFFF</color>
+    <color name="widget_on_image_secondary">#CCFFFFFF</color>
+    <color name="widget_on_image_tertiary_container">#26FFFFFF</color>
+</resources>

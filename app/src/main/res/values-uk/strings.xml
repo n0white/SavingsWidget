@@ -121,4 +121,21 @@
     <string name="motivation_keep_going">Продовжуйте в тому ж дусі</string>
     <string name="motivation_keep_going_compact">Вперед</string>
     <string name="motivation_infinite_success">Успіх!</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_description">Налаштуйте поведінку програми</string>
+    <string name="about_title">Про програму</string>
+    <string name="about_description">Інформація про програму та контакти</string>
+    <string name="about_version">Версія %1$s</string>
+    <string name="about_category_info">Інформація</string>
+    <string name="about_author">Автор</string>
+    <string name="about_author_subtitle">n0white</string>
+    <string name="about_github_subtitle">Переглянути мій проєкт</string>
+    <string name="about_telegram_subtitle">Мій канал з оновленнями</string>
+    <string name="about_github">GitHub</string>
+    <string name="about_telegram">Telegram</string>
+    <string name="other_category">Інше</string>
+    <string name="theme_background_title">Фонова тема</string>
+    <string name="theme_background_description">Дозволяє фоновим зображенням адаптуватися під світлу тему системи</string>
 </resources>

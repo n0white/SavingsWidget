@@ -11,6 +11,7 @@ import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.GoalRepository
+import com.n0white.n0widgets.data.AppSettingsRepository
 import com.n0white.n0widgets.data.model.Goal
 import kotlinx.coroutines.flow.first
 
@@ -21,6 +22,7 @@ class SavingsWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val repo = GoalRepository(context)
+        val settingsRepo = AppSettingsRepository(context)
 
         provideContent {
             val goal by repo.goalFlow.collectAsState(
@@ -31,7 +33,8 @@ class SavingsWidget : GlanceAppWidget() {
                     targetAmount = 0.0
                 )
             )
-            SavingsWidgetContent(goal = goal)
+            val isThemeBackgroundEnabled by settingsRepo.isThemeBackgroundEnabled.collectAsState(initial = false)
+            SavingsWidgetContent(goal = goal, isThemeBackgroundEnabled = isThemeBackgroundEnabled)
         }
     }
 }

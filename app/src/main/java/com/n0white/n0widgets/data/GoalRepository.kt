@@ -29,7 +29,9 @@ class GoalRepository(val context: Context) {
         val KEY_IS_BLUR_ENABLED = booleanPreferencesKey("goal_is_blur_enabled")
         val KEY_IS_PLUS_BUTTON_ENABLED = booleanPreferencesKey("goal_is_plus_button_enabled")
         val KEY_COLOR_PRIMARY = intPreferencesKey("goal_color_primary")
+        val KEY_COLOR_PRIMARY_INVERSE = intPreferencesKey("goal_color_primary_inverse")
         val KEY_COLOR_ON_SURFACE = intPreferencesKey("goal_color_on_surface")
+        val KEY_COLOR_ON_SURFACE_INVERSE = intPreferencesKey("goal_color_on_surface_inverse")
         val KEY_COLOR_SECONDARY_CONTAINER = intPreferencesKey("goal_color_secondary_container")
     }
 
@@ -58,7 +60,9 @@ class GoalRepository(val context: Context) {
             isBlurEnabled = prefs[KEY_IS_BLUR_ENABLED] ?: false,
             isPlusButtonEnabled = prefs[KEY_IS_PLUS_BUTTON_ENABLED] ?: false,
             customPrimary = prefs[KEY_COLOR_PRIMARY],
+            customPrimaryInverse = prefs[KEY_COLOR_PRIMARY_INVERSE],
             customOnSurface = prefs[KEY_COLOR_ON_SURFACE],
+            customOnSurfaceInverse = prefs[KEY_COLOR_ON_SURFACE_INVERSE],
             customSecondaryContainer = prefs[KEY_COLOR_SECONDARY_CONTAINER]
         )
     }
@@ -87,9 +91,11 @@ class GoalRepository(val context: Context) {
             prefs[KEY_IS_PLUS_BUTTON_ENABLED] = goal.isPlusButtonEnabled
             
             goal.customPrimary?.let { prefs[KEY_COLOR_PRIMARY] = it } ?: prefs.remove(KEY_COLOR_PRIMARY)
+            goal.customPrimaryInverse?.let { prefs[KEY_COLOR_PRIMARY_INVERSE] = it } ?: prefs.remove(KEY_COLOR_PRIMARY_INVERSE)
             goal.customOnSurface?.let { prefs[KEY_COLOR_ON_SURFACE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE)
+            goal.customOnSurfaceInverse?.let { prefs[KEY_COLOR_ON_SURFACE_INVERSE] = it } ?: prefs.remove(KEY_COLOR_ON_SURFACE_INVERSE)
             goal.customSecondaryContainer?.let { prefs[KEY_COLOR_SECONDARY_CONTAINER] = it } ?: prefs.remove(KEY_COLOR_SECONDARY_CONTAINER)
-            
+
             // Monthly efficiency logic
             if (currentMonth != storedMonth) {
                 prefs[KEY_LAST_UPDATE_MONTH] = currentMonth

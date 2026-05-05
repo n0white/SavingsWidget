@@ -30,6 +30,10 @@ class CounterWidgetReceiver : GlanceAppWidgetReceiver() {
         } else if (action == Intent.ACTION_BOOT_COMPLETED) {
             // Only reschedule the next midnight update without refreshing UI
             MidnightUpdater.schedule(context)
+        } else if (action == Intent.ACTION_CONFIGURATION_CHANGED) {
+            scope.launch {
+                glanceAppWidget.updateAll(context)
+            }
         }
     }
 }

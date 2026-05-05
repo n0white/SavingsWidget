@@ -13,7 +13,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Savings
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,7 +34,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit) {
+fun MainScreen(
+    onNavigateToSavings: () -> Unit, 
+    onNavigateToCounter: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToAbout: () -> Unit
+) {
     val context = LocalContext.current
 
     var isBatteryOptimized by remember { mutableStateOf(false) }
@@ -114,6 +121,50 @@ fun MainScreen(onNavigateToSavings: () -> Unit, onNavigateToCounter: () -> Unit)
                     },
                     shape = bottomShape,
                     iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                text = stringResource(R.string.other_category),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                NavigationCard(
+                    title = stringResource(R.string.settings_title),
+                    subtitle = stringResource(R.string.settings_description),
+                    icon = Icons.Outlined.Settings,
+                    onClick = {
+                        coroutineScope.launch {
+                            delay(150)
+                            onNavigateToSettings()
+                        }
+                    },
+                    shape = topShape,
+                    iconContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    iconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                NavigationCard(
+                    title = stringResource(R.string.about_title),
+                    subtitle = stringResource(R.string.about_description),
+                    icon = Icons.Outlined.Info,
+                    onClick = {
+                        coroutineScope.launch {
+                            delay(150)
+                            onNavigateToAbout()
+                        }
+                    },
+                    shape = bottomShape,
+                    iconContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
                     iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }

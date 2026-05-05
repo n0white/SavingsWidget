@@ -11,8 +11,8 @@ android {
         applicationId = "com.n0white.n0widgets"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.6"
+        versionCode = 7
+        versionName = "1.7"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")

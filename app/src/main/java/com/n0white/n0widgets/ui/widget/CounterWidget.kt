@@ -11,6 +11,7 @@ import androidx.glance.appwidget.SizeMode
 import androidx.glance.state.GlanceStateDefinition
 import com.n0white.n0widgets.R
 import com.n0white.n0widgets.data.CounterRepository
+import com.n0white.n0widgets.data.AppSettingsRepository
 import com.n0white.n0widgets.data.model.Counter
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -22,6 +23,7 @@ class CounterWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val repo = CounterRepository(context)
+        val settingsRepo = AppSettingsRepository(context)
 
         provideContent {
             val counter by repo.counterFlow.collectAsState(
@@ -32,7 +34,8 @@ class CounterWidget : GlanceAppWidget() {
                     targetDate = LocalDate.now().plusDays(1)
                 )
             )
-            CounterWidgetContent(counter = counter)
+            val isThemeBackgroundEnabled by settingsRepo.isThemeBackgroundEnabled.collectAsState(initial = false)
+            CounterWidgetContent(counter = counter, isThemeBackgroundEnabled = isThemeBackgroundEnabled)
         }
     }
 }

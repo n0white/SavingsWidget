@@ -30,6 +30,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.color.ColorProvider
 import android.content.Intent
 import com.n0white.n0widgets.SavingsActivity
 import com.n0white.n0widgets.AddAmountActivity
@@ -43,64 +44,101 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @Composable
-fun SavingsWidgetContent(goal: Goal) {
+fun SavingsWidgetContent(goal: Goal, isThemeBackgroundEnabled: Boolean) {
     val size = LocalSize.current
     val context = LocalContext.current
     val isSmall = size.width < 200.dp
-    val colors = GlanceTheme.colors
-    
     val sw = context.resources.configuration.smallestScreenWidthDp
     val isHighRes = sw >= 400
 
-    val isBgImagePresent = !goal.backgroundImagePath.isNullOrEmpty()
-    // Define darkness based on whether customOnSurface is light or dark
-    val isBgImageDark = goal.customOnSurface?.let { 
-        val c = Color(it)
-        (0.299 * c.red + 0.587 * c.green + 0.114 * c.blue) > 0.5 
-    } ?: false
-
-    // Resolve custom colors using user image palette if present, otherwise system Monet
-    val primaryColor = goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it)) } 
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.primaryContainer else colors.primary
-        } else colors.primary
-
-    val secondaryContainerColor = goal.customSecondaryContainer?.let { androidx.glance.unit.ColorProvider(Color(it)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.secondaryContainer else colors.secondary
-        } else colors.secondaryContainer
-
-    val onSurfaceColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurface
-    val onSurfaceVariantColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurfaceVariant
-    
-    val tertiaryContainerColor = goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it).copy(alpha = 0.2f)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.tertiaryContainer else colors.tertiary
-        } else colors.tertiaryContainer
-
-    val onTertiaryContainerColor = goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) }
-        ?: if (isBgImagePresent) {
-            if (isBgImageDark) colors.onTertiaryContainer else colors.onTertiary
-        } else colors.onTertiaryContainer
-
     GlanceTheme {
+        val colors = GlanceTheme.colors
+        val isBgImagePresent = !goal.backgroundImagePath.isNullOrEmpty()
+        val forceDark = isBgImagePresent && !isThemeBackgroundEnabled
+
+        // These providers will automatically switch based on system theme
+        val overlayColorProvider = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_overlay_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_overlay)
+        }
+
+        val onImagePrimary = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_primary_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_primary)
+        }
+        
+        val onImageSecondary = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_secondary_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_secondary)
+        }
+        
+        val onImageTertiaryContainer = if (forceDark) {
+            androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_on_image_tertiary_container_night)))
+        } else {
+            androidx.glance.unit.ColorProvider(R.color.widget_on_image_tertiary_container)
+        }
+
+        val primaryColor = if (goal.customPrimary != null && goal.customPrimaryInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(goal.customPrimary))
+            } else {
+                androidx.glance.color.ColorProvider(day = Color(goal.customPrimaryInverse), night = Color(goal.customPrimary))
+            }
+        } else {
+            goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+                ?: if (isBgImagePresent) onImagePrimary else colors.primary
+        }
+
+        val secondaryContainerColor = goal.customSecondaryContainer?.let { androidx.glance.unit.ColorProvider(Color(it)) }
+            ?: if (isBgImagePresent) onImageSecondary else colors.secondaryContainer
+
+        val onSurfaceColor = if (goal.customOnSurface != null && goal.customOnSurfaceInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(goal.customOnSurface))
+            } else {
+                androidx.glance.color.ColorProvider(day = Color(goal.customOnSurfaceInverse), night = Color(goal.customOnSurface))
+            }
+        } else {
+            goal.customOnSurface?.let { androidx.glance.unit.ColorProvider(Color(it)) } ?: colors.onSurface
+        }
+        
+        val onSurfaceVariantColor = onSurfaceColor
+        
+        val tertiaryContainerColor = if (goal.customPrimary != null && goal.customPrimaryInverse != null) {
+            if (forceDark) {
+                androidx.glance.unit.ColorProvider(Color(goal.customPrimary).copy(alpha = 0.2f))
+            } else {
+                androidx.glance.color.ColorProvider(
+                    day = Color(goal.customPrimaryInverse).copy(alpha = 0.2f),
+                    night = Color(goal.customPrimary).copy(alpha = 0.2f)
+                )
+            }
+        } else {
+            goal.customPrimary?.let { androidx.glance.unit.ColorProvider(Color(it).copy(alpha = 0.2f)) }
+                ?: if (isBgImagePresent) onImageTertiaryContainer else colors.tertiaryContainer
+        }
+
+        val onTertiaryContainerColor = onSurfaceColor
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(colors.widgetBackground)
+                .background(if (forceDark) androidx.glance.unit.ColorProvider(Color(context.getColor(R.color.widget_background_night))) else colors.widgetBackground)
                 .cornerRadius(24.dp)
                 .clickable(actionStartActivity(android.content.Intent(context, SavingsActivity::class.java).apply {
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }))
         ) {
-            // Background Image
             if (!goal.backgroundImagePath.isNullOrEmpty()) {
                 val file = File(goal.backgroundImagePath)
                 if (file.exists()) {
                     val originalBitmap = BitmapFactory.decodeFile(file.absolutePath)
                     if (originalBitmap != null) {
                         val bitmap = if (goal.isBlurEnabled) {
-                            blurBitmap(originalBitmap, context, 15f) // BLUR INTENSITY HERE (1f to 25f)
+                            blurBitmap(originalBitmap, context, 15f)
                         } else {
                             originalBitmap
                         }
@@ -111,11 +149,10 @@ fun SavingsWidgetContent(goal: Goal) {
                             contentScale = androidx.glance.layout.ContentScale.Crop,
                             modifier = GlanceModifier.fillMaxSize().cornerRadius(24.dp)
                         )
-                        // Dark overlay for better readability on images
                         Box(
                             modifier = GlanceModifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.5f))
+                                .background(overlayColorProvider)
                                 .cornerRadius(24.dp)
                         ) {}
                     }
@@ -125,7 +162,6 @@ fun SavingsWidgetContent(goal: Goal) {
             Column(
                 modifier = GlanceModifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // 1. Header
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
@@ -141,18 +177,10 @@ fun SavingsWidgetContent(goal: Goal) {
                         val density = context.resources.displayMetrics.density
                         val baseFontSize = if (isHighRes) 21.sp else 19.sp
                         val reducedFontSize = if (isHighRes) 17.sp else 16.sp
-                        
                         val availableWidthDp = (size.width.value.toInt() - 32 - 48 - 12).dp
-                        
                         val displayName = goal.name.ifBlank { context.getString(R.string.default_goal_name) }
                         val finalFontSize = if (!isSmall) {
-                            getDynamicFontSize(
-                                text = displayName,
-                                maxWidth = availableWidthDp,
-                                baseSize = baseFontSize,
-                                reducedSize = reducedFontSize,
-                                density = density
-                            )
+                            getDynamicFontSize(displayName, availableWidthDp, baseFontSize, reducedFontSize, density)
                         } else {
                             if (isHighRes) 20.sp else 18.sp
                         }
@@ -178,7 +206,6 @@ fun SavingsWidgetContent(goal: Goal) {
                                 .cornerRadius(if (isHighRes) 14.dp else 12.dp)
                                 .clickable(actionStartActivity(Intent(context, AddAmountActivity::class.java).apply {
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    // Use sourceBounds for the animation (standard Android behavior when actionStartActivity is used from widget)
                                 })),
                             contentAlignment = Alignment.Center
                         ) {
@@ -207,7 +234,6 @@ fun SavingsWidgetContent(goal: Goal) {
 
                 Spacer(modifier = GlanceModifier.defaultWeight())
 
-                // 2. Middle section (Progress block)
                 Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp)) {
                     if (isSmall) {
                         Text(
@@ -237,7 +263,6 @@ fun SavingsWidgetContent(goal: Goal) {
                             }
                         }
                     } else {
-                        // Large Widget
                         if (goal.savedAmount > 0) {
                             MonthlyEfficiencyChip(
                                 efficiency = goal.monthlyEfficiency, 
@@ -250,20 +275,10 @@ fun SavingsWidgetContent(goal: Goal) {
                         
                         val density = context.resources.displayMetrics.density
                         val savedAmountText = "${goal.currency}${goal.savedAmount.formatAmount()}"
-                        
-                        // --- FONT SIZES FOR SAVED AMOUNT (CHANGE HERE) ---
                         val baseAmountSize = if (isHighRes) 36.sp else 31.sp
                         val reducedAmountSize = if (isHighRes) 26.sp else 23.sp
-                        // -------------------------------------------------
-                        
                         val amountAvailableWidth = (size.width.value.toInt() - 32 - 70).dp
-                        val finalAmountFontSize = getDynamicFontSize(
-                            text = savedAmountText,
-                            maxWidth = amountAvailableWidth,
-                            baseSize = baseAmountSize,
-                            reducedSize = reducedAmountSize,
-                            density = density
-                        )
+                        val finalAmountFontSize = getDynamicFontSize(savedAmountText, amountAvailableWidth, baseAmountSize, reducedAmountSize, density)
 
                         Row(
                             modifier = GlanceModifier.fillMaxWidth(),
@@ -292,7 +307,6 @@ fun SavingsWidgetContent(goal: Goal) {
                     }
                     Spacer(modifier = GlanceModifier.height(if (isHighRes) 4.dp else 2.dp))
 
-                    // Progress Bar
                     WavyProgressIndicator(
                         progress = goal.progress,
                         colorProvider = primaryColor,
@@ -304,7 +318,6 @@ fun SavingsWidgetContent(goal: Goal) {
 
                 Spacer(modifier = GlanceModifier.height(if (isHighRes) 8.dp else 6.dp))
 
-                // 3. Footer
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically

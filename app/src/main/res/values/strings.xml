@@ -111,4 +111,21 @@
     <string name="motivation_keep_going">Keep going</string>
     <string name="motivation_keep_going_compact">Going</string>
     <string name="motivation_infinite_success">Success!</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">Configure app behaviour</string>
+    <string name="about_title">About</string>
+    <string name="about_description">App information and contacts</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_category_info">Information</string>
+    <string name="about_author">Author</string>
+    <string name="about_author_subtitle">n0white</string>
+    <string name="about_github_subtitle">View my project</string>
+    <string name="about_telegram_subtitle">My updates channel</string>
+    <string name="about_github">GitHub</string>
+    <string name="about_telegram">Telegram</string>
+    <string name="other_category">Other</string>
+    <string name="theme_background_title">Theme Background</string>
+    <string name="theme_background_description">Allows background images to adapt to the light system theme</string>
 </resources>
