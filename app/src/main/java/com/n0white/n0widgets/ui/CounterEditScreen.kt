@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -57,7 +58,7 @@ fun CounterEditScreen(
     val view = LocalView.current
     var isSaved by remember { mutableStateOf(false) }
 
-    val sw = context.resources.configuration.smallestScreenWidthDp
+    val sw = LocalConfiguration.current.smallestScreenWidthDp
     val isHighRes = sw >= 410
 
     var initialized by remember { mutableStateOf(false) }
@@ -228,18 +229,13 @@ fun CounterEditScreen(
                                     isInfinite = it
                                 },
                                 modifier = Modifier
-                                    .scale(if (isHighRes) 1.1f else 1.0f)
                                     .padding(start = 12.dp),
-                                thumbContent = if (isInfinite) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Check,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    }
-                                } else {
-                                    null
+                                thumbContent = {
+                                    Icon(
+                                        imageVector = if (isInfinite) Icons.Outlined.Check else Icons.Outlined.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
                                 }
                             )
                         }
@@ -349,17 +345,13 @@ fun CounterEditScreen(
                                     modifier = Modifier
                                         .scale(if (isHighRes) 1.1f else 1.0f)
                                         .padding(start = 12.dp),
-                                    thumbContent = if (isBlurEnabled) {
-                                        {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Check,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                                            )
-                                        }
-                                    } else {
-                                        null
-                                    }
+                                    thumbContent = {
+                                    Icon(
+                                        imageVector = if (isBlurEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
                                 )
                             }
                         }
@@ -410,18 +402,13 @@ fun CounterEditScreen(
                                     isWavy = it 
                                 },
                                 modifier = Modifier
-                                    .scale(if (isHighRes) 1.1f else 1.0f)
                                     .padding(start = 12.dp),
-                                thumbContent = if (isWavy) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Check,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    }
-                                } else {
-                                    null
+                                thumbContent = {
+                                    Icon(
+                                        imageVector = if (isWavy) Icons.Outlined.Check else Icons.Outlined.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
                                 }
                             )
                         }
@@ -472,18 +459,13 @@ fun CounterEditScreen(
                                     formatMode = if (it) CounterFormat.YMD else CounterFormat.DAYS_ONLY 
                                 },
                                 modifier = Modifier
-                                    .scale(if (isHighRes) 1.1f else 1.0f)
                                     .padding(start = 12.dp),
-                                thumbContent = if (formatMode == CounterFormat.YMD) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Check,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    }
-                                } else {
-                                    null
+                                thumbContent = {
+                                    Icon(
+                                        imageVector = if (formatMode == CounterFormat.YMD) Icons.Outlined.Check else Icons.Outlined.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
                                 }
                             )
                         }

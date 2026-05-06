@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
@@ -131,17 +132,13 @@ class SettingsActivity : ComponentActivity() {
                                                     WidgetPreviewManager.updateWidgetPreviews(this@SettingsActivity)
                                                 }
                                             },
-                                            modifier = Modifier.scale(1.1f).padding(start = 12.dp),
-                                            thumbContent = if (isThemeBackgroundEnabled) {
-                                                {
-                                                    Icon(
-                                                        imageVector = Icons.Outlined.Check,
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                                    )
-                                                }
-                                            } else {
-                                                null
+                                            modifier = Modifier.padding(start = 12.dp),
+                                            thumbContent = {
+                                                Icon(
+                                                    imageVector = if (isThemeBackgroundEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                                )
                                             }
                                         )
                                     }
