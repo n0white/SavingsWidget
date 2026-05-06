@@ -64,7 +64,7 @@ class SettingsActivity : ComponentActivity() {
                     uncheckedTrackColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchTrack").value,
                     checkedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
                     uncheckedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
-                    checkedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant, label = "switchIcon").value,
+                    checkedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, label = "switchIcon").value,
                     uncheckedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchIcon").value
                 )
 
