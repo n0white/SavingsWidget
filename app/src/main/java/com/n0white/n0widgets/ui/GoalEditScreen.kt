@@ -9,6 +9,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +58,18 @@ fun GoalEditScreen(
     val sw = LocalConfiguration.current.smallestScreenWidthDp
     val isHighRes = sw >= 410
 
+    @Composable
+    fun switchColors(checked: Boolean) = SwitchDefaults.colors(
+        checkedThumbColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.outline, label = "switchThumb").value,
+        uncheckedThumbColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.outline, label = "switchThumb").value,
+        checkedTrackColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchTrack").value,
+        uncheckedTrackColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchTrack").value,
+        checkedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
+        uncheckedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
+        checkedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant, label = "switchIcon").value,
+        uncheckedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchIcon").value
+    )
+
     var initialized by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var emoji by remember { mutableStateOf("") }
@@ -65,6 +80,10 @@ fun GoalEditScreen(
     var isPlusButtonEnabled by remember { mutableStateOf(false) }
     var isBlurEnabled by remember { mutableStateOf(false) }
     var backgroundImagePath by remember { mutableStateOf<String?>(null) }
+    
+    val isBlurEnabledInteractionSource = remember { MutableInteractionSource() }
+    val isWavyInteractionSource = remember { MutableInteractionSource() }
+    val isPlusButtonEnabledInteractionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(goal) {
         if (!initialized && goal != null) {
@@ -241,7 +260,8 @@ fun GoalEditScreen(
                             },
                             shape = middleShape,
                             color = MaterialTheme.colorScheme.surfaceBright,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            interactionSource = isBlurEnabledInteractionSource
                         ) {
                             Row(
                                 modifier = Modifier
@@ -272,22 +292,23 @@ fun GoalEditScreen(
                                         )
                                     }
                                 }
-                                Switch(
-                                    checked = isBlurEnabled,
-                                    onCheckedChange = { 
-                                        view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                        isBlurEnabled = it 
-                                    },
-                                    modifier = Modifier
-                                        .padding(start = 12.dp),
-                                    thumbContent = {
-                                        Icon(
-                                            imageVector = if (isBlurEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    }
-                                )
+                                CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                                    Switch(
+                                        checked = isBlurEnabled,
+                                        onCheckedChange = null,
+                                        colors = switchColors(isBlurEnabled),
+                                        modifier = Modifier
+                                            .padding(start = 12.dp),
+                                        interactionSource = isBlurEnabledInteractionSource,
+                                        thumbContent = {
+                                            Icon(
+                                                imageVector = if (isBlurEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -299,7 +320,8 @@ fun GoalEditScreen(
                         },
                         shape = middleShape,
                         color = MaterialTheme.colorScheme.surfaceBright,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        interactionSource = isWavyInteractionSource
                     ) {
                         Row(
                             modifier = Modifier
@@ -330,22 +352,23 @@ fun GoalEditScreen(
                                     )
                                 }
                             }
-                            Switch(
-                                checked = isWavy,
-                                onCheckedChange = { 
-                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                    isWavy = it 
-                                },
-                                modifier = Modifier
-                                    .padding(start = 12.dp),
-                                thumbContent = {
-                                    Icon(
-                                        imageVector = if (isWavy) Icons.Outlined.Check else Icons.Outlined.Close,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            )
+                            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                                Switch(
+                                    checked = isWavy,
+                                    onCheckedChange = null,
+                                    colors = switchColors(isWavy),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp),
+                                    interactionSource = isWavyInteractionSource,
+                                    thumbContent = {
+                                        Icon(
+                                            imageVector = if (isWavy) Icons.Outlined.Check else Icons.Outlined.Close,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -356,7 +379,8 @@ fun GoalEditScreen(
                         },
                         shape = bottomShape,
                         color = MaterialTheme.colorScheme.surfaceBright,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        interactionSource = isPlusButtonEnabledInteractionSource
                     ) {
                         Row(
                             modifier = Modifier
@@ -387,22 +411,23 @@ fun GoalEditScreen(
                                     )
                                 }
                             }
-                            Switch(
-                                checked = isPlusButtonEnabled,
-                                onCheckedChange = { 
-                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                    isPlusButtonEnabled = it 
-                                },
-                                modifier = Modifier
-                                    .padding(start = 12.dp),
-                                thumbContent = {
-                                    Icon(
-                                        imageVector = if (isPlusButtonEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                }
-                            )
+                            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                                Switch(
+                                    checked = isPlusButtonEnabled,
+                                    onCheckedChange = null,
+                                    colors = switchColors(isPlusButtonEnabled),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp),
+                                    interactionSource = isPlusButtonEnabledInteractionSource,
+                                    thumbContent = {
+                                        Icon(
+                                            imageVector = if (isPlusButtonEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }

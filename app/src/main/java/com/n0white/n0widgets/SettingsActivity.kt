@@ -5,7 +5,10 @@ import android.view.HapticFeedbackConstants
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,12 +18,16 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +54,19 @@ class SettingsActivity : ComponentActivity() {
                 val isThemeBackgroundEnabled by appSettingsRepository.isThemeBackgroundEnabled.collectAsState(initial = false)
                 val scope = rememberCoroutineScope()
                 val view = LocalView.current
+                val isThemeBackgroundInteractionSource = remember { MutableInteractionSource() }
+
+                @Composable
+                fun switchColors(checked: Boolean) = SwitchDefaults.colors(
+                    checkedThumbColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.outline, label = "switchThumb").value,
+                    uncheckedThumbColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.outline, label = "switchThumb").value,
+                    checkedTrackColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchTrack").value,
+                    uncheckedTrackColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchTrack").value,
+                    checkedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
+                    uncheckedBorderColor = animateColorAsState(if (checked) Color.Transparent else MaterialTheme.colorScheme.outline, label = "switchBorder").value,
+                    checkedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant, label = "switchIcon").value,
+                    uncheckedIconColor = animateColorAsState(if (checked) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest, label = "switchIcon").value
+                )
 
                 ScreenScaffold(
                     title = {
@@ -90,7 +110,8 @@ class SettingsActivity : ComponentActivity() {
                                     },
                                     shape = RoundedCornerShape(24.dp),
                                     color = MaterialTheme.colorScheme.surfaceBright,
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    interactionSource = isThemeBackgroundInteractionSource
                                 ) {
                                     Row(
                                         modifier = Modifier
@@ -121,26 +142,22 @@ class SettingsActivity : ComponentActivity() {
                                                 )
                                             }
                                         }
-                                        Switch(
-                                            checked = isThemeBackgroundEnabled,
-                                            onCheckedChange = { enabled ->
-                                                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                                                scope.launch {
-                                                    appSettingsRepository.setThemeBackgroundEnabled(enabled)
-                                                    SavingsWidget().updateAll(this@SettingsActivity)
-                                                    CounterWidget().updateAll(this@SettingsActivity)
-                                                    WidgetPreviewManager.updateWidgetPreviews(this@SettingsActivity)
+                                        CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                                            Switch(
+                                                checked = isThemeBackgroundEnabled,
+                                                onCheckedChange = null,
+                                                colors = switchColors(isThemeBackgroundEnabled),
+                                                modifier = Modifier.padding(start = 12.dp),
+                                                interactionSource = isThemeBackgroundInteractionSource,
+                                                thumbContent = {
+                                                    Icon(
+                                                        imageVector = if (isThemeBackgroundEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                                    )
                                                 }
-                                            },
-                                            modifier = Modifier.padding(start = 12.dp),
-                                            thumbContent = {
-                                                Icon(
-                                                    imageVector = if (isThemeBackgroundEnabled) Icons.Outlined.Check else Icons.Outlined.Close,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                                                )
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
