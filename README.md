@@ -18,10 +18,10 @@ A beautiful, minimalist Android widgets, built with **Jetpack Glance** and **Mat
 [<img src="https://github.com/HotarunIchijou/Nouto/blob/8f01ad03341048cf3258f39575d34a1a66c62121/assets/badges/get-it-on-github.png" height="90" alt="Get it on GitHub">](https://github.com/n0white/n0widgets/releases/latest)
 
 ## 🎨 Screenshots
-| ![Screenshot 1](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-032140.png) | ![Screenshot 2](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-163140.png) | ![Screenshot 3](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-164044.png) |
+| ![Screenshot 1](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-032140.png) | ![Screenshot 2](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-163140.png) | ![Screenshot 3](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-164044.png) |
 |--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| ![Screenshot 4](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-164118.png) | ![Screenshot 5](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165224.png) | ![Screenshot 6](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165420.png) |
-| ![Screenshot 7](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165443.png) | ![Screenshot 8](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165453.png) | ![Screenshot 9](https://github.com/n0white/n0widgets/blob/develop/assets/Screenshot_20260505-165551.png) |
+| ![Screenshot 4](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-164118.png) | ![Screenshot 5](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-165224.png) | ![Screenshot 6](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-165420.png) |
+| ![Screenshot 7](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-165443.png) | ![Screenshot 8](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-165453.png) | ![Screenshot 9](https://github.com/n0white/n0widgets/blob/main/assets/Screenshot_20260505-165551.png) |
 
 ## Technologies Used
 - [Jetpack Glance](https://developer.android.com/jetpack/compose/glance) - Modern app widgets with Compose-like syntax.
