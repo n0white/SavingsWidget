@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +39,13 @@
             android:name="com.n0white.n0widgets.CounterActivity"
             android:exported="true"
             android:label="@string/counter_settings_title"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.SavingsWidget" />
+
+        <activity
+            android:name="com.n0white.n0widgets.CalendarSettingsActivity"
+            android:exported="true"
+            android:label="@string/calendar_settings_title"
             android:launchMode="singleTask"
             android:theme="@style/Theme.SavingsWidget" />
 
@@ -88,6 +97,19 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/counter_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.n0white.n0widgets.ui.widget.CalendarWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_calendar_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calendar_widget_info" />
         </receiver>
     </application>
 

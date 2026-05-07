@@ -29,7 +29,7 @@ class CounterWidget : GlanceAppWidget() {
             val counter by repo.counterFlow.collectAsState(
                 initial = Counter(
                     name = context.getString(R.string.default_counter_name),
-                    emoji = "📅",
+                    emoji = "⏳",
                     startDate = LocalDate.now(),
                     targetDate = LocalDate.now().plusDays(1)
                 )

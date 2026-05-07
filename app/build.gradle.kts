@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -11,8 +12,8 @@ android {
         applicationId = "com.n0white.n0widgets"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.7"
+        versionCode = 8
+        versionName = "1.8"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
@@ -68,4 +69,12 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.androidx.work.runtime.ktx)
 }

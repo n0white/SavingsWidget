@@ -616,7 +616,7 @@ fun CounterEditScreen(
                         view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                         scope.launch {
                             name = ""
-                            emoji = "📅"
+                            emoji = "⏳"
                             startDate = LocalDate.now()
                             targetDate = LocalDate.now().plusMonths(1)
                             isWavy = false
@@ -627,12 +627,12 @@ fun CounterEditScreen(
 
                             val updatedCounter = (counter ?: Counter(
                                 name = "",
-                                emoji = "📅",
+                                emoji = "⏳",
                                 startDate = LocalDate.now(),
                                 targetDate = LocalDate.now().plusMonths(1)
                             )).copy(
                                 name = "",
-                                emoji = "📅",
+                                emoji = "⏳",
                                 startDate = LocalDate.now(),
                                 targetDate = LocalDate.now().plusMonths(1),
                                 isWavy = false,

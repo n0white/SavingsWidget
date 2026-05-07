@@ -48,7 +48,7 @@ class CounterRepository(val context: Context) {
 
         Counter(
             name = prefs[KEY_NAME] ?: "",
-            emoji = prefs[KEY_EMOJI] ?: "📅",
+            emoji = prefs[KEY_EMOJI] ?: "⏳",
             startDate = startDate,
             targetDate = targetDate,
             formatMode = formatMode,

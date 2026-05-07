@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Info
@@ -28,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.n0white.n0widgets.CalendarSettingsActivity
 import com.n0white.n0widgets.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -71,6 +73,7 @@ fun MainScreen(
     }
 
     val topShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val middleShape = RoundedCornerShape(4.dp)
     val bottomShape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
     val singleShape = RoundedCornerShape(24.dp)
 
@@ -112,16 +115,33 @@ fun MainScreen(
                 NavigationCard(
                     title = stringResource(R.string.main_screen_counter_widget_title),
                     subtitle = stringResource(R.string.main_screen_counter_widget_subtitle),
-                    icon = Icons.Outlined.CalendarToday,
+                    icon = Icons.Outlined.HourglassEmpty,
                     onClick = {
                         coroutineScope.launch {
                             delay(150)
                             onNavigateToCounter()
                         }
                     },
-                    shape = bottomShape,
+                    shape = middleShape,
                     iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     iconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+
+                NavigationCard(
+                    title = stringResource(R.string.main_screen_calendar_widget_title),
+                    subtitle = stringResource(R.string.main_screen_calendar_widget_subtitle),
+                    icon = Icons.Outlined.CalendarToday,
+                    onClick = {
+                        coroutineScope.launch {
+                            delay(150)
+                            val intent = Intent(context, CalendarSettingsActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                            context.startActivity(intent)
+                        }
+                    },
+                    shape = bottomShape,
+                    iconContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                    iconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }

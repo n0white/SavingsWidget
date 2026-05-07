@@ -3,6 +3,8 @@
     <string name="widget_savings_name">Savings</string>
     <string name="widget_description">Track your savings goals on your home screen.</string>
     <string name="widget_counter_name">Counter</string>
+    <string name="widget_calendar_name">Calendar</string>
+    <string name="calendar_widget_description">A stylish calendar widget with weather info.</string>
     <string name="counter_widget_description">Track your important dates and countdowns on your home screen.</string>
 
     <string name="main_screen_select_widget_hint">Select widget to configure</string>
@@ -10,6 +12,8 @@
     <string name="main_screen_savings_widget_subtitle">Track your financial goals</string>
     <string name="main_screen_counter_widget_title">Counter Widget</string>
     <string name="main_screen_counter_widget_subtitle">Track dates and events</string>
+    <string name="main_screen_calendar_widget_title">Calendar Widget</string>
+    <string name="main_screen_calendar_widget_subtitle">Full month view with weather</string>
     <string name="main_screen_background_updates_title">Background Updates</string>
     <string name="main_screen_background_updates_description">To update widgets automatically, please grant background execution permissions.</string>
 
@@ -111,6 +115,7 @@
     <string name="motivation_keep_going">Keep going</string>
     <string name="motivation_keep_going_compact">Going</string>
     <string name="motivation_infinite_success">Success!</string>
+    <string name="no_events_today">No events today</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -128,4 +133,16 @@
     <string name="other_category">Other</string>
     <string name="theme_background_title">Theme Background</string>
     <string name="theme_background_description">Allows background images to adapt to the light system theme</string>
+
+    <!-- Calendar Settings -->
+    <string name="calendar_settings_title">Calendar Settings</string>
+    <string name="temperature_unit_title">Temperature Unit</string>
+    <string name="temperature_unit_celsius">Celsius (°C)</string>
+    <string name="temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="first_day_title">First Day of Week</string>
+    <string name="first_day_monday">Monday</string>
+    <string name="first_day_sunday">Sunday</string>
+    <string name="weather_location_title">Weather Location</string>
+    <string name="weather_location_city">City Name</string>
+    <string name="weather_location_hint">e.g. London, UK</string>
 </resources>

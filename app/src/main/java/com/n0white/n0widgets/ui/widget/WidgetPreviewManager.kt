@@ -56,6 +56,23 @@ object WidgetPreviewManager {
             } catch (e: Exception) {
                 Log.e("WidgetPreview", "Error setting Savings preview", e)
             }
+
+            // Generated Preview for CalendarWidget
+            try {
+                val calendarWidget = CalendarWidget()
+                val calendarRemoteViews = calendarWidget.compose(
+                    context = context,
+                    size = DpSize(320.dp, 160.dp)
+                )
+                val success = appWidgetManager.setWidgetPreview(
+                    ComponentName(context, CalendarWidgetReceiver::class.java),
+                    AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+                    calendarRemoteViews
+                )
+                Log.d("WidgetPreview", "Calendar preview set: $success")
+            } catch (e: Exception) {
+                Log.e("WidgetPreview", "Error setting Calendar preview", e)
+            }
         }
     }
 }

@@ -3,6 +3,8 @@
     <string name="widget_savings_name">Накопления</string>
     <string name="widget_description">Отслеживайте свои цели накоплений на главном экране.</string>
     <string name="widget_counter_name">Счетчик</string>
+    <string name="widget_calendar_name">Календарь</string>
+    <string name="calendar_widget_description">Стильный виджет календаря с информацией о погоде.</string>
     <string name="counter_widget_description">Отслеживайте важные даты и обратный отсчет на главном экране.</string>
 
     <string name="main_screen_select_widget_hint">Выберите виджет для настройки</string>
@@ -10,6 +12,8 @@
     <string name="main_screen_savings_widget_subtitle">Отслеживайте свои финансовые цели</string>
     <string name="main_screen_counter_widget_title">Виджет счетчика</string>
     <string name="main_screen_counter_widget_subtitle">Отслеживайте даты и события</string>
+    <string name="main_screen_calendar_widget_title">Виджет Календаря</string>
+    <string name="main_screen_calendar_widget_subtitle">Просмотр месяца и погода</string>
     <string name="main_screen_background_updates_title">Фоновые обновления</string>
     <string name="main_screen_background_updates_description">Для автоматического обновления виджетов предоставьте разрешения на фоновое выполнение.</string>
 
@@ -120,6 +124,7 @@
     <string name="motivation_keep_going">Продолжайте в том же духе</string>
     <string name="motivation_keep_going_compact">Вперед</string>
     <string name="motivation_infinite_success">Успех!</string>
+    <string name="no_events_today">Сегодня нет событий</string>
 
     <!-- Settings -->
     <string name="settings_title">Настройки</string>

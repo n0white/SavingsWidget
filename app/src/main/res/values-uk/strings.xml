@@ -3,6 +3,8 @@
     <string name="widget_savings_name">Заощадження</string>
     <string name="widget_description">Відстежуйте свої цілі заощаджень на головному екрані.</string>
     <string name="widget_counter_name">Лічильник</string>
+    <string name="widget_calendar_name">Календар</string>
+    <string name="calendar_widget_description">Стильний віджет календаря з інформацією про погоду.</string>
     <string name="counter_widget_description">Відстежуйте важливі дати та зворотний відлік на головному екрані.</string>
 
     <string name="main_screen_select_widget_hint">Виберіть віджет для налаштування</string>
@@ -10,6 +12,8 @@
     <string name="main_screen_savings_widget_subtitle">Відстежуйте свої фінансові цілі</string>
     <string name="main_screen_counter_widget_title">Віджет лічильника</string>
     <string name="main_screen_counter_widget_subtitle">Відстежуйте дати та події</string>
+    <string name="main_screen_calendar_widget_title">Віджет Календаря</string>
+    <string name="main_screen_calendar_widget_subtitle">Перегляд місяця та погода</string>
     <string name="main_screen_background_updates_title">Фонові оновлення</string>
     <string name="main_screen_background_updates_description">Для автоматичного оновлення віджетів надайте дозволи на фонове виконання.</string>
 
@@ -121,6 +125,7 @@
     <string name="motivation_keep_going">Продовжуйте в тому ж дусі</string>
     <string name="motivation_keep_going_compact">Вперед</string>
     <string name="motivation_infinite_success">Успіх!</string>
+    <string name="no_events_today">Сьогодні немає подій</string>
 
     <!-- Settings -->
     <string name="settings_title">Налаштування</string>
@@ -138,4 +143,16 @@
     <string name="other_category">Інше</string>
     <string name="theme_background_title">Фонова тема</string>
     <string name="theme_background_description">Дозволяє фоновим зображенням адаптуватися під світлу тему системи</string>
+
+    <!-- Calendar Settings -->
+    <string name="calendar_settings_title">Налаштування календаря</string>
+    <string name="temperature_unit_title">Одиниці температури</string>
+    <string name="temperature_unit_celsius">Цельсій (°C)</string>
+    <string name="temperature_unit_fahrenheit">Фаренгейт (°F)</string>
+    <string name="first_day_title">Перший день тижня</string>
+    <string name="first_day_monday">Понеділок</string>
+    <string name="first_day_sunday">Неділя</string>
+    <string name="weather_location_title">Місце для погоди</string>
+    <string name="weather_location_city">Назва міста</string>
+    <string name="weather_location_hint">напр. Київ, UA</string>
 </resources>
